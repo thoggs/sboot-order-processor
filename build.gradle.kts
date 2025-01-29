@@ -30,6 +30,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-amqp")
+    implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("org.flywaydb:flyway-core:${property("flywayCoreVersion")}")
     implementation("org.flywaydb:flyway-database-postgresql:${property("flywayCoreVersion")}")
     compileOnly("org.projectlombok:lombok")
