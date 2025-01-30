@@ -4,6 +4,7 @@ CREATE TABLE tb_orders
     customer_name VARCHAR(255) NOT NULL,
     total_price   DECIMAL(10, 2) NULL,
     order_status  VARCHAR(50)  NOT NULL CHECK (order_status IN ('PENDING', 'PROCESSING', 'COMPLETED', 'CANCELED')),
+    order_hash    TEXT UNIQUE  NOT NULL,
     created_at    TIMESTAMP    NOT NULL DEFAULT now(),
     updated_at    TIMESTAMP
 );

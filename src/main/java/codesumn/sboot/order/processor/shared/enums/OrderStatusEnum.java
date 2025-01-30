@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum OrderStatus {
+public enum OrderStatusEnum {
 
     PENDING("pending"),
     PROCESSING("processing"),
@@ -14,8 +14,8 @@ public enum OrderStatus {
 
     private final String value;
 
-    public static OrderStatus fromValue(String value) {
-        for (OrderStatus role : OrderStatus.values()) {
+    public static OrderStatusEnum fromValue(String value) {
+        for (OrderStatusEnum role : OrderStatusEnum.values()) {
             if (role.value.equalsIgnoreCase(value)) {
                 return role;
             }
