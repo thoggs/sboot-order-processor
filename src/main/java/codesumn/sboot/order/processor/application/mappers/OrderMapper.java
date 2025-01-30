@@ -4,6 +4,7 @@ import codesumn.sboot.order.processor.application.dtos.records.order.OrderInputR
 import codesumn.sboot.order.processor.application.dtos.records.order.OrderItemRecordDto;
 import codesumn.sboot.order.processor.domain.models.OrderItemModel;
 import codesumn.sboot.order.processor.domain.models.OrderModel;
+import codesumn.sboot.order.processor.shared.enums.OrderStatusEnum;
 
 import java.util.List;
 import java.util.UUID;
@@ -13,7 +14,7 @@ public class OrderMapper {
     public static OrderModel fromDto(OrderInputRecordDto dto) {
         OrderModel order = new OrderModel();
         order.setCustomerName(dto.customerName());
-        order.setOrderStatus(dto.orderStatus());
+        order.setOrderStatus(OrderStatusEnum.fromValue(dto.orderStatus()));
         order.setItems(mapOrderItems(dto.items(), order));
 
         return order;
