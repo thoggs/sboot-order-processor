@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public record OrderInputRecordDto(
+        @NotBlank String customerCode,
         @NotBlank String customerName,
         BigDecimal totalPrice,
         @NotNull String orderStatus,

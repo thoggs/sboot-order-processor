@@ -9,6 +9,7 @@ import java.util.UUID;
 
 public record OrderItemRecordDto(
         @NotBlank UUID id,
+        @NotBlank String productCode,
         @NotBlank String productName,
         @NotNull @Min(1) Integer quantity,
         @NotNull @Min(0) BigDecimal unitPrice

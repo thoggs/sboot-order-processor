@@ -13,13 +13,14 @@ import java.util.stream.Collectors;
 public class OrderMapper {
     public static OrderModel fromDto(OrderInputRecordDto dto) {
         OrderModel order = new OrderModel();
+        order.setCustomerCode(dto.customerCode());
         order.setCustomerName(dto.customerName());
         order.setOrderStatus(OrderStatusEnum.fromValue(dto.orderStatus()));
 
         List<OrderItemModel> items = mapOrderItems(dto.items(), order);
         order.setItems(items);
 
-        order.setOrderHash(OrderHashGenerator.generateOrderHash(items));
+        order.setOrderHash(OrderHashGenerator.generateOrderHash(dto.customerCode(), items));
 
         return order;
     }
@@ -31,6 +32,7 @@ public class OrderMapper {
         return items.stream()
                 .map(itemDto -> OrderItemModel.builder()
                         .order(order)
+                        .productCode(itemDto.productCode())
                         .productName(itemDto.productName())
                         .quantity(itemDto.quantity())
                         .price(itemDto.unitPrice())
