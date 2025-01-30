@@ -23,5 +23,7 @@ public interface OrderServiceAdapterPort {
 
     ResponseDto<OrderRecordDto> updateOrder(UUID id, OrderInputRecordDto orderInputRecordDto);
 
+    void updateOrderSafely(UUID id, OrderInputRecordDto orderInput);
+
     ResponseDto<OrderRecordDto> deleteOrder(UUID id);
 }
