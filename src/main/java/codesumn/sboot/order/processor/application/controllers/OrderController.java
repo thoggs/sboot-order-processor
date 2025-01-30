@@ -5,7 +5,7 @@ import codesumn.sboot.order.processor.application.dtos.records.order.OrderRecord
 import codesumn.sboot.order.processor.application.dtos.records.pagination.PaginationResponseDto;
 import codesumn.sboot.order.processor.application.dtos.records.response.ResponseDto;
 import codesumn.sboot.order.processor.application.param.FilterCriteriaParamDto;
-import codesumn.sboot.order.processor.domain.inbound.OrderServicePort;
+import codesumn.sboot.order.processor.domain.inbound.OrderServiceAdapterPort;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,10 +20,10 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/orders")
 public class OrderController {
-    private final OrderServicePort orderServicePort;
+    private final OrderServiceAdapterPort orderServicePort;
 
     @Autowired
-    public OrderController(OrderServicePort orderServicePort) {
+    public OrderController(OrderServiceAdapterPort orderServicePort) {
         this.orderServicePort = orderServicePort;
     }
 

@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
-public interface OrderServicePort {
+public interface OrderServiceAdapterPort {
     PaginationResponseDto<List<OrderRecordDto>> findAll(
             int page,
             int pageSize,
