@@ -1,4 +1,5 @@
 extra["flywayCoreVersion"] = "11.2.0"
+extra["springdocVersion"] = "2.8.4"
 
 plugins {
     java
@@ -33,6 +34,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("org.flywaydb:flyway-core:${property("flywayCoreVersion")}")
     implementation("org.flywaydb:flyway-database-postgresql:${property("flywayCoreVersion")}")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:${property("springdocVersion")}")
     compileOnly("org.projectlombok:lombok")
     runtimeOnly("org.postgresql:postgresql")
     annotationProcessor("org.projectlombok:lombok")
