@@ -14,8 +14,9 @@ CREATE TABLE tb_order_items
 (
     id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     order_id     UUID           NOT NULL REFERENCES tb_orders (id) ON DELETE CASCADE,
-    product_code VARCHAR(50)    NOT NULL UNIQUE,
+    product_code VARCHAR(50)    NOT NULL,
     product_name VARCHAR(255)   NOT NULL,
     quantity     INT            NOT NULL,
-    price        DECIMAL(10, 2) NOT NULL
+    price        DECIMAL(10, 2) NOT NULL,
+    CONSTRAINT unique_product_per_order UNIQUE (order_id, product_code)
 );
