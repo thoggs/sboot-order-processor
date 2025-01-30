@@ -17,6 +17,8 @@ import codesumn.sboot.order.processor.shared.enums.OrderStatusEnum;
 import codesumn.sboot.order.processor.shared.exceptions.errors.DuplicateOrderException;
 import codesumn.sboot.order.processor.shared.exceptions.errors.ResourceNotFoundException;
 import codesumn.sboot.order.processor.shared.parsers.SortParser;
+import jakarta.transaction.Transactional;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,9 +29,8 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -48,6 +49,7 @@ public class OrderServiceAdapter implements OrderServiceAdapterPort {
         this.sortParser = sortParser;
     }
 
+    @Transactional
     @Override
     public PaginationResponseDto<List<OrderRecordDto>> findAll(
             int page,
@@ -88,6 +90,7 @@ public class OrderServiceAdapter implements OrderServiceAdapterPort {
         return PaginationResponseDto.create(orderRecords, metadata);
     }
 
+    @Transactional
     @Override
     public ResponseDto<OrderRecordDto> getOrderById(UUID id) {
         OrderModel order = orderPersistencePort.findById(id)
@@ -98,6 +101,7 @@ public class OrderServiceAdapter implements OrderServiceAdapterPort {
         return ResponseDto.create(userRecord);
     }
 
+    @Transactional
     @Override
     public ResponseDto<OrderRecordDto> createOrder(OrderInputRecordDto orderInputRecordDto) {
         OrderModel order = OrderMapper.fromDto(orderInputRecordDto);
@@ -115,28 +119,46 @@ public class OrderServiceAdapter implements OrderServiceAdapterPort {
         return ResponseDto.create(convertToOrderRecordDto(savedOrder));
     }
 
+    @Transactional
     @Override
     public ResponseDto<OrderRecordDto> updateOrder(UUID id, OrderInputRecordDto orderInput) {
         OrderModel existingOrder = orderPersistencePort.findById(id)
                 .orElseThrow(ResourceNotFoundException::new);
 
-        if (orderPersistencePort.findByOrderHash(existingOrder.getOrderHash()).isPresent()) {
+        Optional<OrderModel> existingOrderWithSameHash = orderPersistencePort
+                .findByOrderHash(existingOrder.getOrderHash());
+
+        if (existingOrderWithSameHash.isPresent()
+                && !existingOrderWithSameHash.get().getId().equals(existingOrder.getId())) {
             throw new DuplicateOrderException();
         }
 
-        existingOrder.setCustomerName(orderInput.customerName());
-        existingOrder.setItems(convertOrderItemsToModel(orderInput.items(), existingOrder));
-        existingOrder.setTotalPrice(orderInput.totalPrice());
-        existingOrder.setOrderStatus(OrderStatusEnum.fromValue(orderInput.orderStatus()));
+        return getOrderRecordDtoResponseDto(orderInput, existingOrder);
+    }
 
-        orderPersistencePort.saveOrder(existingOrder);
+    @Transactional
+    @Override
+    public void updateOrderSafely(UUID id, OrderInputRecordDto orderInput) {
+        Optional<OrderModel> optionalOrder = orderPersistencePort.findById(id);
+        if (optionalOrder.isPresent()) {
+            OrderModel existingOrder = optionalOrder.get();
 
-        OrderRecordDto updatedOrderRecord = convertToOrderRecordDto(existingOrder);
+            Optional<OrderModel> duplicateOrder = orderPersistencePort.findByOrderHash(existingOrder.getOrderHash());
+            if (duplicateOrder.isPresent() && !duplicateOrder.get().getId().equals(existingOrder.getId())) {
+                System.out.println("Duplicate order found with hash: " + existingOrder.getOrderHash());
+                ResponseDto.create(null);
+                return;
+            }
 
-        return ResponseDto.create(updatedOrderRecord);
+            getOrderRecordDtoResponseDto(orderInput, existingOrder);
+        } else {
+            System.out.println("Order with ID " + id + " not found.");
+            ResponseDto.create(null);
+        }
     }
 
     @Override
+    @Transactional
     public ResponseDto<OrderRecordDto> deleteOrder(UUID id) {
         OrderModel order = orderPersistencePort.findById(id)
                 .orElseThrow(ResourceNotFoundException::new);
@@ -146,6 +168,22 @@ public class OrderServiceAdapter implements OrderServiceAdapterPort {
         OrderRecordDto orderRecordDto = convertToOrderRecordDto(order);
 
         return ResponseDto.create(orderRecordDto);
+    }
+
+    @NotNull
+    private ResponseDto<OrderRecordDto> getOrderRecordDtoResponseDto(
+            OrderInputRecordDto orderInput, OrderModel existingOrder
+    ) {
+        existingOrder.setCustomerName(orderInput.customerName());
+        existingOrder.setTotalPrice(orderInput.totalPrice());
+        existingOrder.setOrderStatus(OrderStatusEnum.fromValue(orderInput.orderStatus()));
+
+        updateOrderItems(existingOrder.getItems(), orderInput.items(), existingOrder);
+
+        orderPersistencePort.saveOrder(existingOrder);
+
+        OrderRecordDto updatedOrderRecord = convertToOrderRecordDto(existingOrder);
+        return ResponseDto.create(updatedOrderRecord);
     }
 
     private OrderRecordDto convertToOrderRecordDto(OrderModel order) {
@@ -169,15 +207,28 @@ public class OrderServiceAdapter implements OrderServiceAdapterPort {
                 .collect(Collectors.toList());
     }
 
-    private List<OrderItemModel> convertOrderItemsToModel(List<OrderItemRecordDto> items, OrderModel order) {
-        return items.stream()
-                .map(item -> new OrderItemModel(
-                        UUID.randomUUID(),
-                        order,
-                        item.productName(),
-                        item.quantity(),
-                        item.unitPrice()
-                ))
-                .collect(Collectors.toList());
+    private void updateOrderItems(
+            List<OrderItemModel> existingItems,
+            List<OrderItemRecordDto> newItems,
+            OrderModel order
+    ) {
+        Map<UUID, OrderItemModel> existingItemsMap = existingItems.stream()
+                .collect(Collectors.toMap(OrderItemModel::getId, Function.identity()));
+
+        for (OrderItemRecordDto newItem : newItems) {
+            OrderItemModel item;
+            if (newItem.id() != null && existingItemsMap.containsKey(newItem.id())) {
+                item = existingItemsMap.get(newItem.id());
+                item.setQuantity(newItem.quantity());
+                item.setPrice(newItem.unitPrice());
+            } else {
+                item = new OrderItemModel();
+                item.setProductName(newItem.productName());
+                item.setQuantity(newItem.quantity());
+                item.setPrice(newItem.unitPrice());
+                item.setOrder(order);
+            }
+            existingItems.add(item);
+        }
     }
 }

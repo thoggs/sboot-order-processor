@@ -21,6 +21,7 @@ public class OrderResponseMessagingAdapter implements OrderResponseMessagingPort
     @Override
     @RabbitListener(queues = "${spring.rabbitmq.processor.response.queue}")
     public void consumeOrderResponse(OrderRecordDto order) {
+
         OrderInputRecordDto orderInputRecordDto = new OrderInputRecordDto(
                 order.customerName(),
                 order.totalPrice(),
@@ -28,6 +29,6 @@ public class OrderResponseMessagingAdapter implements OrderResponseMessagingPort
                 order.items()
         );
 
-        orderServiceAdapterPort.updateOrder(order.id(), orderInputRecordDto);
+        orderServiceAdapterPort.updateOrderSafely(order.id(), orderInputRecordDto);
     }
 }
