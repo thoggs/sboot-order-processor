@@ -9,7 +9,7 @@ public enum OrderStatusEnum {
 
     PENDING("pending"),
     PROCESSING("processing"),
-    COMPLETED("completed"),
+    PROCESSED("processed"),
     CANCELED("canceled");
 
     private final String value;

@@ -8,7 +8,7 @@ import codesumn.sboot.order.processor.application.dtos.records.pagination.Pagina
 import codesumn.sboot.order.processor.application.dtos.records.pagination.PaginationResponseDto;
 import codesumn.sboot.order.processor.application.dtos.records.response.ResponseDto;
 import codesumn.sboot.order.processor.application.mappers.OrderMapper;
-import codesumn.sboot.order.processor.domain.inbound.OrderServicePort;
+import codesumn.sboot.order.processor.domain.inbound.OrderServiceAdapterPort;
 import codesumn.sboot.order.processor.domain.models.OrderItemModel;
 import codesumn.sboot.order.processor.domain.models.OrderModel;
 import codesumn.sboot.order.processor.domain.outbound.OrderMessagingPort;
@@ -33,7 +33,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-public class OrderServiceAdapter implements OrderServicePort {
+public class OrderServiceAdapter implements OrderServiceAdapterPort {
     private final OrderPersistencePort orderPersistencePort;
     private final OrderMessagingPort orderMessagingPort;
     private final SortParser sortParser;
