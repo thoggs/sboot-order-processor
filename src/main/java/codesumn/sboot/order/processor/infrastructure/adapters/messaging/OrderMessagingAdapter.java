@@ -1,6 +1,6 @@
 package codesumn.sboot.order.processor.infrastructure.adapters.messaging;
 
-import codesumn.sboot.order.processor.domain.models.OrderModel;
+import codesumn.sboot.order.processor.application.dtos.records.order.OrderRecordDto;
 import codesumn.sboot.order.processor.domain.outbound.OrderMessagingPort;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,7 +24,7 @@ public class OrderMessagingAdapter implements OrderMessagingPort {
     }
 
     @Override
-    public void sendOrder(OrderModel order) {
+    public void sendOrder(OrderRecordDto order) {
         rabbitTemplate.convertAndSend(exchange, routingKey, order);
     }
 }

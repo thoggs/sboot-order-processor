@@ -1,7 +1,7 @@
 package codesumn.sboot.order.processor.domain.outbound;
 
-import codesumn.sboot.order.processor.domain.models.OrderModel;
+import codesumn.sboot.order.processor.application.dtos.records.order.OrderRecordDto;
 
 public interface OrderMessagingPort {
-    void sendOrder(OrderModel order);
+    void sendOrder(OrderRecordDto order);
 }
