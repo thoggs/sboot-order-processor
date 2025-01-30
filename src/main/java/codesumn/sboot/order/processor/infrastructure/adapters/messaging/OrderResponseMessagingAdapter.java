@@ -12,7 +12,7 @@ public class OrderResponseMessagingAdapter implements OrderResponseMessagingPort
     private String responseQueue;
 
     @Override
-    @RabbitListener(queues = "#{responseQueue}")
+    @RabbitListener(queues = "${spring.rabbitmq.processor.response.queue}")
     public void consumeOrderResponse(String message) {
         System.out.println("📥 Mensagem recebida da fila '" + responseQueue + "': " + message);
         // TODO: Implementar lógica de processamento aqui...

@@ -3,6 +3,7 @@ package codesumn.sboot.order.processor.shared.exceptions.handlers;
 import codesumn.sboot.order.processor.application.dtos.errors.ErrorMessageDto;
 import codesumn.sboot.order.processor.application.dtos.records.errors.ErrorResponseDto;
 import codesumn.sboot.order.processor.application.dtos.records.metadata.MetadataRecordDto;
+import codesumn.sboot.order.processor.shared.exceptions.errors.DuplicateOrderException;
 import codesumn.sboot.order.processor.shared.exceptions.errors.EnumValidationException;
 import codesumn.sboot.order.processor.shared.exceptions.errors.ResourceNotFoundException;
 import org.springframework.http.HttpHeaders;
@@ -97,6 +98,23 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ErrorResponseDto<List<Object>> errorResponse = ErrorResponseDto
                 .createWithoutData(Collections.singletonList(metadata));
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(DuplicateOrderException.class)
+    public ResponseEntity<ErrorResponseDto<List<Object>>> handleDuplicateOrderException(
+            DuplicateOrderException ex
+    ) {
+        ErrorMessageDto errorMessage = new ErrorMessageDto(
+                "DUPLICATE_ORDER",
+                ex.getMessage(),
+                null
+        );
+
+        MetadataRecordDto metadata = new MetadataRecordDto(Collections.singletonList(errorMessage));
+        ErrorResponseDto<List<Object>> errorResponse = ErrorResponseDto
+                .createWithoutData(Collections.singletonList(metadata));
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
     }
 
     @Override
