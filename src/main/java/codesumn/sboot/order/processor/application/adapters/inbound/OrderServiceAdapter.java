@@ -11,6 +11,7 @@ import codesumn.sboot.order.processor.application.mappers.OrderMapper;
 import codesumn.sboot.order.processor.domain.inbound.OrderServicePort;
 import codesumn.sboot.order.processor.domain.models.OrderItemModel;
 import codesumn.sboot.order.processor.domain.models.OrderModel;
+import codesumn.sboot.order.processor.domain.outbound.OrderMessagingPort;
 import codesumn.sboot.order.processor.domain.outbound.OrderPersistencePort;
 import codesumn.sboot.order.processor.shared.enums.OrderStatusEnum;
 import codesumn.sboot.order.processor.shared.exceptions.errors.DuplicateOrderException;
@@ -34,14 +35,16 @@ import java.util.stream.Collectors;
 @Service
 public class OrderServiceAdapter implements OrderServicePort {
     private final OrderPersistencePort orderPersistencePort;
+    private final OrderMessagingPort orderMessagingPort;
     private final SortParser sortParser;
 
     @Autowired
     public OrderServiceAdapter(
-            OrderPersistencePort orderPersistencePort,
+            OrderPersistencePort orderPersistencePort, OrderMessagingPort orderMessagingPort,
             SortParser sortParser
     ) {
         this.orderPersistencePort = orderPersistencePort;
+        this.orderMessagingPort = orderMessagingPort;
         this.sortParser = sortParser;
     }
 
@@ -105,6 +108,8 @@ public class OrderServiceAdapter implements OrderServicePort {
 
         OrderModel savedOrder = orderPersistencePort.saveOrder(order);
 
+        orderMessagingPort.sendOrder(order);
+
         return ResponseDto.create(convertToOrderRecordDto(savedOrder));
     }
 
@@ -154,7 +159,6 @@ public class OrderServiceAdapter implements OrderServicePort {
     private List<OrderItemRecordDto> convertOrderItems(List<OrderItemModel> items) {
         return items.stream()
                 .map(item -> new OrderItemRecordDto(
-                        item.getId(),
                         item.getProductName(),
                         item.getQuantity(),
                         item.getPrice()

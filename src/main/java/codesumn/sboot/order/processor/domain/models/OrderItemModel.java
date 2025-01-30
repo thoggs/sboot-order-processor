@@ -10,6 +10,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @Entity
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "tb_order_items")
