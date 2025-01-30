@@ -108,7 +108,9 @@ public class OrderServiceAdapter implements OrderServicePort {
 
         OrderModel savedOrder = orderPersistencePort.saveOrder(order);
 
-        orderMessagingPort.sendOrder(order);
+        OrderRecordDto savedOrderRecord = convertToOrderRecordDto(savedOrder);
+
+        orderMessagingPort.sendOrder(savedOrderRecord);
 
         return ResponseDto.create(convertToOrderRecordDto(savedOrder));
     }
@@ -159,6 +161,7 @@ public class OrderServiceAdapter implements OrderServicePort {
     private List<OrderItemRecordDto> convertOrderItems(List<OrderItemModel> items) {
         return items.stream()
                 .map(item -> new OrderItemRecordDto(
+                        item.getId(),
                         item.getProductName(),
                         item.getQuantity(),
                         item.getPrice()
