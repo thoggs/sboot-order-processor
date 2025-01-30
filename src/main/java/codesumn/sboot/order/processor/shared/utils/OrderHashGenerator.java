@@ -20,11 +20,13 @@ public class OrderHashGenerator {
         items.stream()
                 .sorted(Comparator
                         .comparing(OrderItemModel::getProductCode, Comparator.nullsFirst(String::compareTo))
-                        .thenComparing(item -> item.getQuantity() == null ? 0 : item.getQuantity())) // Evita erro de null
-                .forEach(item -> rawHash.append(item.getProductCode()).append(":")
-                        .append(item.getQuantity() == null ? 0 : item.getQuantity()).append(","));
+                        .thenComparing(item -> item.getQuantity() == null ? 0 : item.getQuantity()))
+                .forEach(item -> rawHash
+                        .append(item.getProductCode())
+                        .append(":")
+                        .append(item.getQuantity() == null ? 0 : item.getQuantity())
+                        .append(","));
 
-        // Remove a última vírgula para evitar inconsistências
         if (rawHash.charAt(rawHash.length() - 1) == ',') {
             rawHash.setLength(rawHash.length() - 1);
         }
@@ -44,7 +46,7 @@ public class OrderHashGenerator {
             }
             return hexString.toString();
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("Erro ao gerar hash SHA-256", e);
+            throw new RuntimeException("Error on generate hash SHA-256", e);
         }
     }
 }
