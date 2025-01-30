@@ -3,9 +3,12 @@ package codesumn.sboot.order.processor.shared.exceptions.handlers;
 import codesumn.sboot.order.processor.application.dtos.errors.ErrorMessageDto;
 import codesumn.sboot.order.processor.application.dtos.records.errors.ErrorResponseDto;
 import codesumn.sboot.order.processor.application.dtos.records.metadata.MetadataRecordDto;
+import codesumn.sboot.order.processor.shared.exceptions.errors.DuplicateKeyException;
 import codesumn.sboot.order.processor.shared.exceptions.errors.DuplicateOrderException;
 import codesumn.sboot.order.processor.shared.exceptions.errors.EnumValidationException;
 import codesumn.sboot.order.processor.shared.exceptions.errors.ResourceNotFoundException;
+import jakarta.validation.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -106,6 +109,30 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     ) {
         ErrorMessageDto errorMessage = new ErrorMessageDto(
                 "DUPLICATE_ORDER",
+                ex.getMessage(),
+                null
+        );
+
+        MetadataRecordDto metadata = new MetadataRecordDto(Collections.singletonList(errorMessage));
+        ErrorResponseDto<List<Object>> errorResponse = ErrorResponseDto
+                .createWithoutData(Collections.singletonList(metadata));
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler({DataIntegrityViolationException.class, ConstraintViolationException.class})
+    public ResponseEntity<ErrorResponseDto<List<Object>>> handleDatabaseExceptions() {
+        return handleDuplicateKeyException(
+                new DuplicateKeyException("Duplicate customerCode or productCode detected.")
+        );
+    }
+
+    @ExceptionHandler(DuplicateKeyException.class)
+    public ResponseEntity<ErrorResponseDto<List<Object>>> handleDuplicateKeyException(
+            DuplicateKeyException ex
+    ) {
+        ErrorMessageDto errorMessage = new ErrorMessageDto(
+                "DUPLICATE_KEY_ERROR",
                 ex.getMessage(),
                 null
         );

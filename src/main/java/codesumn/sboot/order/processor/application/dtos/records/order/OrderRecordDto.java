@@ -11,6 +11,7 @@ import java.util.UUID;
 
 public record OrderRecordDto(
         @NotNull UUID id,
+        @NotBlank String customerCode,
         @NotBlank String customerName,
         @NotNull OrderStatusEnum orderStatus,
         @Min(0) BigDecimal totalPrice,

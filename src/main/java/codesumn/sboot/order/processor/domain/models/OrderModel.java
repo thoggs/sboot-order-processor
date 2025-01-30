@@ -25,6 +25,9 @@ public class OrderModel implements Serializable {
     @Column(columnDefinition = "UUID")
     private UUID id;
 
+    @Column(name = "customer_code", nullable = false, unique = true)
+    private String customerCode;
+
     @Column(name = "customer_name", nullable = false)
     private String customerName;
 

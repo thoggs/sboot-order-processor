@@ -23,6 +23,7 @@ public class OrderResponseMessagingAdapter implements OrderResponseMessagingPort
     public void consumeOrderResponse(OrderRecordDto order) {
 
         OrderInputRecordDto orderInputRecordDto = new OrderInputRecordDto(
+                order.customerCode(),
                 order.customerName(),
                 order.totalPrice(),
                 order.orderStatus().name(),

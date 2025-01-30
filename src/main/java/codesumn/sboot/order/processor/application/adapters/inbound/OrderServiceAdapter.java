@@ -189,6 +189,7 @@ public class OrderServiceAdapter implements OrderServiceAdapterPort {
     private OrderRecordDto convertToOrderRecordDto(OrderModel order) {
         return new OrderRecordDto(
                 order.getId(),
+                order.getCustomerCode(),
                 order.getCustomerName(),
                 order.getOrderStatus(),
                 order.getTotalPrice(),
@@ -200,6 +201,7 @@ public class OrderServiceAdapter implements OrderServiceAdapterPort {
         return items.stream()
                 .map(item -> new OrderItemRecordDto(
                         item.getId(),
+                        item.getProductCode(),
                         item.getProductName(),
                         item.getQuantity(),
                         item.getPrice()

@@ -21,6 +21,9 @@ public class OrderItemModel implements Serializable {
     @Column(columnDefinition = "UUID")
     private UUID id;
 
+    @Column(name = "product_code", nullable = false, unique = true)
+    private String productCode;
+
     @ManyToOne
     @JoinColumn(name = "order_id", nullable = false)
     private OrderModel order;
