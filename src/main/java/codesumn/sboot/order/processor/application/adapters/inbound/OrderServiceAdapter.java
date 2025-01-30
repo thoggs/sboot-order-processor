@@ -12,6 +12,7 @@ import codesumn.sboot.order.processor.domain.inbound.OrderServicePort;
 import codesumn.sboot.order.processor.domain.models.OrderItemModel;
 import codesumn.sboot.order.processor.domain.models.OrderModel;
 import codesumn.sboot.order.processor.domain.outbound.OrderPersistencePort;
+import codesumn.sboot.order.processor.shared.enums.OrderStatusEnum;
 import codesumn.sboot.order.processor.shared.exceptions.errors.DuplicateOrderException;
 import codesumn.sboot.order.processor.shared.exceptions.errors.ResourceNotFoundException;
 import codesumn.sboot.order.processor.shared.parsers.SortParser;
@@ -108,8 +109,24 @@ public class OrderServiceAdapter implements OrderServicePort {
     }
 
     @Override
-    public ResponseDto<OrderRecordDto> updateOrder(UUID id, OrderInputRecordDto orderInputRecordDto) {
-        return null;
+    public ResponseDto<OrderRecordDto> updateOrder(UUID id, OrderInputRecordDto orderInput) {
+        OrderModel existingOrder = orderPersistencePort.findById(id)
+                .orElseThrow(ResourceNotFoundException::new);
+
+        if (orderPersistencePort.findByOrderHash(existingOrder.getOrderHash()).isPresent()) {
+            throw new DuplicateOrderException();
+        }
+
+        existingOrder.setCustomerName(orderInput.customerName());
+        existingOrder.setItems(convertOrderItemsToModel(orderInput.items(), existingOrder));
+        existingOrder.setTotalPrice(orderInput.totalPrice());
+        existingOrder.setOrderStatus(OrderStatusEnum.fromValue(orderInput.orderStatus()));
+
+        orderPersistencePort.saveOrder(existingOrder);
+
+        OrderRecordDto updatedOrderRecord = convertToOrderRecordDto(existingOrder);
+
+        return ResponseDto.create(updatedOrderRecord);
     }
 
     @Override
@@ -141,6 +158,18 @@ public class OrderServiceAdapter implements OrderServicePort {
                         item.getProductName(),
                         item.getQuantity(),
                         item.getPrice()
+                ))
+                .collect(Collectors.toList());
+    }
+
+    private List<OrderItemModel> convertOrderItemsToModel(List<OrderItemRecordDto> items, OrderModel order) {
+        return items.stream()
+                .map(item -> new OrderItemModel(
+                        UUID.randomUUID(),
+                        order,
+                        item.productName(),
+                        item.quantity(),
+                        item.unitPrice()
                 ))
                 .collect(Collectors.toList());
     }
