@@ -6,7 +6,6 @@ import codesumn.sboot.order.processor.domain.inbound.OrderResponseMessagingPort;
 import codesumn.sboot.order.processor.domain.inbound.OrderServiceAdapterPort;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -15,7 +14,6 @@ public class OrderResponseMessagingAdapter implements OrderResponseMessagingPort
     private final OrderServiceAdapterPort orderServiceAdapterPort;
     private final ObjectMapper objectMapper;
 
-    @Autowired
     public OrderResponseMessagingAdapter(OrderServiceAdapterPort orderServiceAdapterPort, ObjectMapper objectMapper) {
         this.orderServiceAdapterPort = orderServiceAdapterPort;
         this.objectMapper = objectMapper;

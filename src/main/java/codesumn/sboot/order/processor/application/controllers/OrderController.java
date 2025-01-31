@@ -7,7 +7,6 @@ import codesumn.sboot.order.processor.application.dtos.records.response.Response
 import codesumn.sboot.order.processor.application.param.FilterCriteriaParamDto;
 import codesumn.sboot.order.processor.domain.inbound.OrderServiceAdapterPort;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springdoc.core.annotations.ParameterObject;
@@ -22,7 +21,6 @@ import java.util.UUID;
 public class OrderController {
     private final OrderServiceAdapterPort orderServicePort;
 
-    @Autowired
     public OrderController(OrderServiceAdapterPort orderServicePort) {
         this.orderServicePort = orderServicePort;
     }
