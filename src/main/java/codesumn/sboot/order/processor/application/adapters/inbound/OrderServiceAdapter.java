@@ -7,11 +7,11 @@ import codesumn.sboot.order.processor.application.dtos.records.order.OrderRecord
 import codesumn.sboot.order.processor.application.dtos.records.pagination.PaginationDto;
 import codesumn.sboot.order.processor.application.dtos.records.pagination.PaginationResponseDto;
 import codesumn.sboot.order.processor.application.dtos.records.response.ResponseDto;
+import codesumn.sboot.order.processor.application.events.OrderCreatedEvent;
 import codesumn.sboot.order.processor.application.mappers.OrderMapper;
 import codesumn.sboot.order.processor.domain.inbound.OrderServiceAdapterPort;
 import codesumn.sboot.order.processor.domain.models.OrderItemModel;
 import codesumn.sboot.order.processor.domain.models.OrderModel;
-import codesumn.sboot.order.processor.domain.outbound.OrderMessagingPort;
 import codesumn.sboot.order.processor.domain.outbound.OrderPersistencePort;
 import codesumn.sboot.order.processor.shared.enums.OrderStatusEnum;
 import codesumn.sboot.order.processor.shared.exceptions.errors.DuplicateOrderException;
@@ -20,6 +20,7 @@ import codesumn.sboot.order.processor.shared.parsers.SortParser;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -36,17 +37,18 @@ import java.util.stream.Collectors;
 @Service
 public class OrderServiceAdapter implements OrderServiceAdapterPort {
     private final OrderPersistencePort orderPersistencePort;
-    private final OrderMessagingPort orderMessagingPort;
     private final SortParser sortParser;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Autowired
     public OrderServiceAdapter(
-            OrderPersistencePort orderPersistencePort, OrderMessagingPort orderMessagingPort,
-            SortParser sortParser
+            OrderPersistencePort orderPersistencePort,
+            SortParser sortParser,
+            ApplicationEventPublisher eventPublisher
     ) {
         this.orderPersistencePort = orderPersistencePort;
-        this.orderMessagingPort = orderMessagingPort;
         this.sortParser = sortParser;
+        this.eventPublisher = eventPublisher;
     }
 
     @Transactional
@@ -112,9 +114,7 @@ public class OrderServiceAdapter implements OrderServiceAdapterPort {
 
         OrderModel savedOrder = orderPersistencePort.saveOrder(order);
 
-        OrderRecordDto savedOrderRecord = convertToOrderRecordDto(savedOrder);
-
-        orderMessagingPort.sendOrder(savedOrderRecord);
+        eventPublisher.publishEvent(new OrderCreatedEvent(convertToOrderRecordDto(savedOrder)));
 
         return ResponseDto.create(convertToOrderRecordDto(savedOrder));
     }
