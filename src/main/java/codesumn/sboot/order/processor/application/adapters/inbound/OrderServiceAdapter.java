@@ -19,7 +19,6 @@ import codesumn.sboot.order.processor.shared.exceptions.errors.ResourceNotFoundE
 import codesumn.sboot.order.processor.shared.parsers.SortParser;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -40,7 +39,6 @@ public class OrderServiceAdapter implements OrderServiceAdapterPort {
     private final SortParser sortParser;
     private final ApplicationEventPublisher eventPublisher;
 
-    @Autowired
     public OrderServiceAdapter(
             OrderPersistencePort orderPersistencePort,
             SortParser sortParser,

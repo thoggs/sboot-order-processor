@@ -6,7 +6,6 @@ import jakarta.validation.ConstraintValidatorContext;
 
 public class DateRangeValidator implements ConstraintValidator<ValidDateRange, FilterCriteriaParamDto> {
 
-    @Override
     public boolean isValid(FilterCriteriaParamDto value, ConstraintValidatorContext context) {
         boolean startDatePresent = value.getStartDate() != null;
         boolean endDatePresent = value.getEndDate() != null;
