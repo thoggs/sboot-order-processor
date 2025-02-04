@@ -1,4 +1,4 @@
-extra["flywayCoreVersion"] = "11.2.0"
+extra["flywayCoreVersion"] = "11.3.0"
 extra["springdocVersion"] = "2.8.4"
 
 plugins {
