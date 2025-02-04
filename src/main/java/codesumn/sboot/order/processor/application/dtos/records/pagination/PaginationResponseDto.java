@@ -23,14 +23,6 @@ public record PaginationResponseDto<T>(
         return new PaginationResponseDto<>(data, true, metadata);
     }
 
-    public static <T> PaginationResponseDto<T> create(T data, PaginationDto pagination) {
-        MetadataPaginationRecordDto metadata = new MetadataPaginationRecordDto(
-                pagination,
-                List.of(new ErrorMessageDto("INFO", "Operation completed successfully.", null))
-        );
-        return create(data, metadata);
-    }
-
     @Override
     public String toString() {
         return "PaginationResponseDto{" +
