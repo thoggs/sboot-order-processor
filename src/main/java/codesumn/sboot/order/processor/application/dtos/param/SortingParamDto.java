@@ -1,4 +1,4 @@
-package codesumn.sboot.order.processor.application.param;
+package codesumn.sboot.order.processor.application.dtos.param;
 
 import lombok.Getter;
 import lombok.Setter;

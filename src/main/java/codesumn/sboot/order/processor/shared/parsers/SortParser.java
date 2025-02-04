@@ -1,6 +1,6 @@
 package codesumn.sboot.order.processor.shared.parsers;
 
-import codesumn.sboot.order.processor.application.param.SortingParamDto;
+import codesumn.sboot.order.processor.application.dtos.param.SortingParamDto;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.data.domain.Sort;
