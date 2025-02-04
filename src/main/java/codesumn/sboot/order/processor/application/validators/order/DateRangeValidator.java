@@ -1,6 +1,6 @@
 package codesumn.sboot.order.processor.application.validators.order;
 
-import codesumn.sboot.order.processor.application.param.FilterCriteriaParamDto;
+import codesumn.sboot.order.processor.application.dtos.param.FilterCriteriaParamDto;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 

@@ -4,7 +4,7 @@ import codesumn.sboot.order.processor.application.dtos.records.order.OrderInputR
 import codesumn.sboot.order.processor.application.dtos.records.order.OrderRecordDto;
 import codesumn.sboot.order.processor.application.dtos.records.pagination.PaginationResponseDto;
 import codesumn.sboot.order.processor.application.dtos.records.response.ResponseDto;
-import codesumn.sboot.order.processor.application.param.FilterCriteriaParamDto;
+import codesumn.sboot.order.processor.application.dtos.param.FilterCriteriaParamDto;
 import codesumn.sboot.order.processor.domain.inbound.OrderServiceAdapterPort;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;

@@ -2,8 +2,6 @@ package codesumn.sboot.order.processor.application.dtos.records.pagination;
 
 import codesumn.sboot.order.processor.application.dtos.errors.ErrorMessageDto;
 import codesumn.sboot.order.processor.application.dtos.records.metadata.MetadataPaginationRecordDto;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
 import java.util.List;
@@ -14,19 +12,7 @@ public record PaginationResponseDto<T>(
         MetadataPaginationRecordDto metadata
 ) implements Serializable {
 
-    @JsonCreator
-    public PaginationResponseDto(
-            @JsonProperty("data") T data,
-            @JsonProperty("success") Boolean success,
-            @JsonProperty("metadata") MetadataPaginationRecordDto metadata) {
-        this.data = data;
-        this.success = success;
-        this.metadata = metadata;
-    }
-
-    public static <T> PaginationResponseDto<T> create(
-            @JsonProperty("data") T data,
-            @JsonProperty("metadata") MetadataPaginationRecordDto metadata) {
+    public static <T> PaginationResponseDto<T> create(T data, MetadataPaginationRecordDto metadata) {
         if (metadata == null || metadata.messages().isEmpty()) {
             assert metadata != null;
             metadata = new MetadataPaginationRecordDto(
@@ -37,9 +23,7 @@ public record PaginationResponseDto<T>(
         return new PaginationResponseDto<>(data, true, metadata);
     }
 
-    public static <T> PaginationResponseDto<T> create(
-            @JsonProperty("data") T data,
-            @JsonProperty("pagination") PaginationDto pagination) {
+    public static <T> PaginationResponseDto<T> create(T data, PaginationDto pagination) {
         MetadataPaginationRecordDto metadata = new MetadataPaginationRecordDto(
                 pagination,
                 List.of(new ErrorMessageDto("INFO", "Operation completed successfully.", null))

@@ -18,7 +18,7 @@ public class RabbitMQConfig {
 
         rabbitTemplate.setConfirmCallback((correlationData, ack, cause) -> {
             if (!ack) {
-                System.err.println("Erro no envio da mensagem: " + cause);
+                System.err.println("Message shipping error: " + cause);
             }
         });
 

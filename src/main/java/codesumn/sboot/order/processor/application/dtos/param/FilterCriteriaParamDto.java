@@ -1,4 +1,4 @@
-package codesumn.sboot.order.processor.application.param;
+package codesumn.sboot.order.processor.application.dtos.param;
 
 import codesumn.sboot.order.processor.application.validators.order.ValidDateRange;
 import jakarta.validation.constraints.Min;
