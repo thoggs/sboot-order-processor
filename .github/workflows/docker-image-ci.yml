@@ -26,3 +26,4 @@ jobs:
           file: Dockerfile
           push: true
           tags: thoggs/sboot-order-processor:latest
+          platforms: linux/amd64,linux/arm64
