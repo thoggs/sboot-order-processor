@@ -12,13 +12,13 @@ pipeline {
     }
 
     environment {
-		DOCKER_IMAGE = 'thoggs/sboot-order-dispatcher:latest'
+		DOCKER_IMAGE = 'thoggs/sboot-order-processor:latest'
     }
 
     stages {
 		stage('Checkout') {
 			steps {
-				git branch: 'main', url: 'https://github.com/thoggs/sboot-order-dispatcher.git'
+				git branch: 'main', url: 'https://github.com/thoggs/sboot-order-processor.git'
             }
         }
 
