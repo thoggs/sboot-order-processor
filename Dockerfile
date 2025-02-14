@@ -34,7 +34,7 @@ RUN gradle clean build -x test
 
 FROM oraclelinux:9
 
-ENV LANG en_US.UTF-8
+ENV LANG=en_US.UTF-8
 ARG JAVA_VERSION=21
 ENV JAVA_HOME=/usr/java/jdk-$JAVA_VERSION
 ENV PATH=$JAVA_HOME/bin:$PATH
