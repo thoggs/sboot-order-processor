@@ -33,5 +33,5 @@ jobs:
           push: true
           tags: thoggs/sboot-order-processor:latest
           platforms: linux/amd64,linux/arm64
-          cache-from: type=gha
-          cache-to: type=gha,mode=max,force=true
+          cache-from: type=gha,scope=${{ github.sha }}
+          cache-to: type=gha,mode=max,scope=${{ github.sha }}
