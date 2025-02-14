@@ -1,6 +1,15 @@
 pipeline {
 	agent any
 
+	options {
+		disableConcurrentBuilds()
+        buildDiscarder(logRotator(numToKeepStr: '5'))
+	}
+
+	triggers {
+		githubPush()
+    }
+
     environment {
 		DOCKER_IMAGE = 'thoggs/sboot-order-processor:latest'
     }
