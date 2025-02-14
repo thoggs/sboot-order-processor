@@ -1,4 +1,4 @@
-FROM oraclelinux:9 as builder
+FROM oraclelinux:9 AS builder
 
 RUN set -eux; \
     dnf install -y tar git wget unzip
