@@ -39,3 +39,4 @@ jobs:
           platforms: linux/amd64,linux/arm64
           cache-from: type=gha,scope=${{ github.run_id }}
           cache-to: type=gha,mode=max,scope=${{ github.run_id }}
+          build-args: --no-cache
