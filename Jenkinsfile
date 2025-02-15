@@ -1,7 +1,7 @@
 pipeline {
 	agent {
 		dockerContainer {
-			image 'alpine:latest'
+			image 'jenkins/inbound-agent:latest'
         }
     }
 
