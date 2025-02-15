@@ -60,28 +60,9 @@ pipeline {
 			steps {
 				sh '''
                     docker buildx build \
-                        --platform linux/amd64,linux/arm64 \
-                        -t $DOCKER_IMAGE:latest-amd64 \
-                        -t $DOCKER_IMAGE:latest-arm64 \
-                    	--push .
-                '''
-            }
-        }
-
-        stage('Create Multi-Arch Manifest') {
-			steps {
-				sh '''
-                    docker manifest create $DOCKER_IMAGE:latest \
-                        --amend $DOCKER_IMAGE:latest-amd64 \
-                        --amend $DOCKER_IMAGE:latest-arm64
-                '''
-            }
-        }
-
-        stage('Push Multi-Arch Manifest') {
-			steps {
-				sh '''
-                    docker manifest push $DOCKER_IMAGE:latest
+						--platform linux/amd64,linux/arm64 \
+						-t $DOCKER_IMAGE:latest \
+						--push .
                 '''
             }
         }
