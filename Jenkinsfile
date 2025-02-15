@@ -2,6 +2,7 @@ pipeline {
 	agent {
 		dockerContainer {
 			image 'jenkins/inbound-agent:latest'
+			args '-v /var/run/docker.sock:/var/run/docker.sock'
         }
     }
 
