@@ -1,4 +1,5 @@
 pipeline {
+
 	agent {
 		label 'ec2-agent'
     }
@@ -14,11 +15,12 @@ pipeline {
     }
 
     environment {
-		DOCKER_IMAGE = 'public.ecr.aws/n1d9q0i7/sboot-order-processor:latest'
+		DOCKER_IMAGE = 'public.ecr.aws/n1a9j0r1/sboot-order-processor:latest'
         AWS_REGION = 'us-east-1'
     }
 
     stages {
+
 		stage('Checkout') {
 			steps {
 				git branch: 'main', url: 'https://github.com/thoggs/sboot-order-dispatcher.git'
@@ -70,5 +72,6 @@ pipeline {
 				sh 'docker system prune -f --volumes || true'
             }
         }
+
     }
 }
