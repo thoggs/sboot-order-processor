@@ -1,7 +1,8 @@
 pipeline {
+
 	agent {
-		dockerContainer
-    }
+		label 'jenkins-agent'
+  	}
 
     options {
 		disableConcurrentBuilds()
