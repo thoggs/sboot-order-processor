@@ -15,7 +15,7 @@ pipeline {
     }
 
     environment {
-		DOCKER_IMAGE = 'public.ecr.aws/n1a9j0r1/sboot-order-processor:latest'
+		DOCKER_IMAGE = 'public.ecr.aws/n1a9j0r1/sboot-order-processor'
         AWS_REGION = 'us-east-1'
     }
 
@@ -57,21 +57,45 @@ pipeline {
             }
         }
 
-        stage('Build and Push Multi-Arch Docker Image') {
+        stage('Build amd64') {
 			steps {
 				sh '''
-                    docker buildx build --platform linux/amd64,linux/arm64 \
-                        -t $DOCKER_IMAGE \
-                        --push .
+                    docker buildx build \
+                      --platform linux/amd64 \
+                      -t $DOCKER_IMAGE-amd64 \
+                      --load .
                 '''
             }
         }
 
-        stage('Cleanup') {
+        stage('Build arm64') {
 			steps {
-				sh 'docker system prune -f --volumes || true'
+				sh '''
+                    docker buildx build \
+                      --platform linux/arm64 \
+                      -t $DOCKER_IMAGE-arm64 \
+                      --load .
+                '''
             }
         }
+
+		stage('Create Multi-Arch Manifest') {
+			steps {
+				sh '''
+					docker manifest create $DOCKER_IMAGE:latest \
+						--amend $DOCKER_IMAGE-amd64 \
+						--amend $DOCKER_IMAGE-arm64
+				'''
+			}
+		}
+
+		stage('Push Multi-Arch Manifest') {
+			steps {
+				sh '''
+					docker manifest push $DOCKER_IMAGE:latest
+				'''
+			}
+		}
 
     }
 }
