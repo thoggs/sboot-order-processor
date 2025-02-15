@@ -1,5 +1,4 @@
 pipeline {
-
 	agent {
 		label 'ec2-agent'
     }
@@ -20,7 +19,6 @@ pipeline {
     }
 
     stages {
-
 		stage('Checkout') {
 			steps {
 				git branch: 'main', url: 'https://github.com/thoggs/sboot-order-dispatcher.git'
@@ -42,7 +40,13 @@ pipeline {
 
         stage('Login to AWS ECR Public') {
 			steps {
-				withAWS(credentials: 'aws-credentials', region: "$AWS_REGION") {
+				withCredentials([
+                    usernamePassword(
+                        credentialsId: 'aws-username-password',
+                        usernameVariable: 'AWS_ACCESS_KEY_ID',
+                        passwordVariable: 'AWS_SECRET_ACCESS_KEY'
+                    )
+                ]) {
 					sh '''
                         aws ecr-public get-login-password --region $AWS_REGION \
                         | docker login --username AWS --password-stdin public.ecr.aws
@@ -66,6 +70,5 @@ pipeline {
 				sh 'docker system prune -f --volumes || true'
             }
         }
-
     }
 }
