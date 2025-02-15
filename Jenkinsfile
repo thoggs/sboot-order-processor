@@ -29,9 +29,9 @@ pipeline {
 
         stage('Set up QEMU') {
 			steps {
-				sh 'docker run --rm --privileged multiarch/qemu-user-static --reset -p yes'
-            }
-        }
+				sh 'docker run --rm --privileged multiarch/qemu-user-static --reset -p yes || true'
+    		}
+		}
 
         stage('Set up Docker Buildx') {
 			steps {
