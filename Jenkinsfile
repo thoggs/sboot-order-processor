@@ -59,22 +59,22 @@ pipeline {
         stage('Build amd64') {
 			steps {
 				sh '''
-                    docker buildx build \
-                      --platform linux/amd64 \
-                      -t $DOCKER_IMAGE-amd64 \
-                      --load .
-                '''
+            		docker buildx build \
+						--platform linux/amd64 \
+						-t $DOCKER_IMAGE-amd64 \
+						--push .
+        		'''
             }
         }
 
         stage('Build arm64') {
 			steps {
 				sh '''
-                    docker buildx build \
-                      --platform linux/arm64 \
-                      -t $DOCKER_IMAGE-arm64 \
-                      --load .
-                '''
+            		docker buildx build \
+						--platform linux/arm64 \
+						-t $DOCKER_IMAGE-arm64 \
+						--push .
+        		'''
             }
         }
 
