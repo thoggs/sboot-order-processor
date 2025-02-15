@@ -9,10 +9,6 @@ pipeline {
         skipDefaultCheckout(true)
     }
 
-    triggers {
-		githubPush()
-    }
-
     environment {
 		DOCKER_IMAGE = 'public.ecr.aws/n1a9j0r1/sboot-order-processor'
         AWS_REGION = 'us-east-1'
