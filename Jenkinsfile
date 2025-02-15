@@ -63,8 +63,7 @@ pipeline {
                         --platform linux/amd64,linux/arm64 \
                         -t $DOCKER_IMAGE:latest-amd64 \
                         -t $DOCKER_IMAGE:latest-arm64 \
-                    	.
-                    docker images
+                    	--push .
                 '''
             }
         }
