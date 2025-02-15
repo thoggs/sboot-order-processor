@@ -1,7 +1,7 @@
 pipeline {
 
 	agent {
-		label 'jenkins-agent'
+		label 'ec2-agent'
   	}
 
     options {
