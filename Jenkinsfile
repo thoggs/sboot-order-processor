@@ -1,8 +1,6 @@
 pipeline {
 	agent {
-		dockerContainer {
-			image 'thoggs/jenkins-agent-alpine:latest'
-        }
+		dockerContainer
     }
 
     options {
