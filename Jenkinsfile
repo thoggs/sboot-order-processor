@@ -56,27 +56,16 @@ pipeline {
             }
         }
 
-        stage('Build amd64') {
+        stage('Build Multi-Arch') {
 			steps {
 				sh '''
             		docker buildx build \
-						--platform linux/amd64 \
-						-t $DOCKER_IMAGE-amd64 \
+						--platform linux/amd64,linux/arm64 \
+						-t $DOCKER_IMAGE:latest \
 						--push .
         		'''
-            }
-        }
-
-        stage('Build arm64') {
-			steps {
-				sh '''
-            		docker buildx build \
-						--platform linux/arm64 \
-						-t $DOCKER_IMAGE-arm64 \
-						--push .
-        		'''
-            }
-        }
+    		}
+		}
 
 		stage('Create Multi-Arch Manifest') {
 			steps {
