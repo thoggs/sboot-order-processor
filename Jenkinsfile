@@ -1,8 +1,7 @@
 pipeline {
-
 	agent {
 		label 'ec2-agent'
-  	}
+    }
 
     options {
 		disableConcurrentBuilds()
@@ -15,13 +14,14 @@ pipeline {
     }
 
     environment {
-		DOCKER_IMAGE = 'thoggs/sboot-order-processor:latest'
+		DOCKER_IMAGE = 'public.ecr.aws/n1d9q0i7/sboot-order-processor:latest'
+        AWS_REGION = 'us-east-1'
     }
 
     stages {
 		stage('Checkout') {
 			steps {
-				git branch: 'main', url: 'https://github.com/thoggs/sboot-order-processor.git'
+				git branch: 'main', url: 'https://github.com/thoggs/sboot-order-dispatcher.git'
             }
         }
 
@@ -38,17 +38,12 @@ pipeline {
             }
         }
 
-        stage('Login to Docker Hub') {
+        stage('Login to AWS ECR Public') {
 			steps {
-				withCredentials([
-                    usernamePassword(
-                        credentialsId: 'docker-hub-credentials',
-                        usernameVariable: 'DOCKER_USERNAME',
-                        passwordVariable: 'DOCKER_PASSWORD'
-                    )
-                ]) {
-					sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
-                }
+				sh '''
+                    aws ecr-public get-login-password --region $AWS_REGION \
+                    | docker login --username AWS --password-stdin public.ecr.aws
+                '''
             }
         }
 
