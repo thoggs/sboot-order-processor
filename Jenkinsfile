@@ -1,5 +1,8 @@
 pipeline {
-	agent any
+
+	agent {
+		label 'ec2-agent'
+  	}
 
     options {
 		disableConcurrentBuilds()
