@@ -1,5 +1,10 @@
 pipeline {
-	agent any
+	agent {
+		docker {
+			image 'alpine:latest'
+            args '-v /var/run/docker.sock:/var/run/docker.sock'
+        }
+    }
 
     options {
 		disableConcurrentBuilds()
