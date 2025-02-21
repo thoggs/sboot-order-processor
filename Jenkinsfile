@@ -18,7 +18,7 @@ pipeline {
 
 		stage('Checkout') {
 			steps {
-				git branch: 'main', url: 'https://github.com/thoggs/sboot-order-dispatcher.git'
+				git branch: 'main', url: 'https://github.com/thoggs/sboot-order-processor.git'
             }
         }
 
