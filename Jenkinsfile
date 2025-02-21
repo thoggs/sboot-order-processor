@@ -1,7 +1,7 @@
 pipeline {
 
 	agent {
-		label 'ec2-agent'
+		label 'ec2-java17-agent'
     }
 
     options {
