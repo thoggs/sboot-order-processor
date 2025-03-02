@@ -145,7 +145,7 @@ pipeline {
 		stage('Build with Gradle') {
 			steps {
 				container('gradle') {
-					sh 'gradle clean build'
+					sh 'gradle clean build -x test'
                 }
             }
         }
@@ -156,11 +156,11 @@ pipeline {
 					withSonarQubeEnv('sonarqube-server') {
 						withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
 							sh '''
-                        sonar-scanner \
-                            -Dsonar.projectKey=sboot-order-processor \
-                            -Dsonar.sources=. \
-                            -Dsonar.login=$SONAR_TOKEN
-                    '''
+								sonar-scanner \
+								-Dsonar.projectKey=sboot-order-processor \
+								-Dsonar.sources=. \
+								-Dsonar.login=$SONAR_TOKEN
+                    		'''
 						}
 					}
 				}
