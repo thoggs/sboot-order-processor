@@ -52,16 +52,21 @@ pipeline {
             }
         }
 
-        stage('SonarQube Analysis') {
-			agent {
-				docker {
-					image 'sonarsource/sonar-scanner-cli:latest'
-					args '-u root'
-				}
-			}
+        stage('Install Sonar Scanner') {
 			steps {
-                withSonarQubeEnv('sonarqube-server') {
-                    sh 'sonar-scanner -Dsonar.projectKey=sboot-order-processor -Dsonar.sources=.'
+				sh '''
+					wget https://binaries.sonarsource.com/?prefix=Distribution/sonar-scanner-cli/sonar-scanner-cli-7.0.2.4839-linux-x64.zip
+					unzip sonar-scanner-cli-7.0.2.4839-linux-x64.zip
+					export PATH=$PATH:$(pwd)/sonar-scanner-cli-7.0.2.4839-linux-x64/bin
+					sonar-scanner --version
+        		'''
+    		}
+		}
+
+        stage('SonarQube Analysis') {
+			steps {
+				withSonarQubeEnv('sonarqube-server') {
+					sh 'sonar-scanner -Dsonar.projectKey=sboot-order-processor -Dsonar.sources=.'
                 }
             }
         }
