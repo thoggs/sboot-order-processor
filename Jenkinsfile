@@ -142,17 +142,25 @@ pipeline {
 			}
 		}
 
-        stage('SonarQube Analysis') {
+       stage('SonarQube Analysis') {
 			steps {
 				container('sonar-scanner') {
 					withSonarQubeEnv('sonarqube-server') {
-						sh 'sonar-scanner -Dsonar.projectKey=sboot-order-processor -Dsonar.sources=.'
-                    }
-                }
-            }
-        }
+						withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
+							sh '''
+                        sonar-scanner \
+                            -Dsonar.projectKey=sboot-order-processor \
+                            -Dsonar.sources=. \
+                            -Dsonar.login=$SONAR_TOKEN
+                    '''
+						}
+					}
+				}
+			}
+       }
 
-        stage('Build Multi-Arch') {
+
+    	stage('Build Multi-Arch') {
 			steps {
 				container('docker') {
 					sh '''
@@ -163,6 +171,6 @@ pipeline {
                     '''
                 }
             }
-        }
-    }
+    	}
+	}
 }
