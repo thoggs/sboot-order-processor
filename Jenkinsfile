@@ -167,7 +167,6 @@ pipeline {
 			}
        }
 
-
     	stage('Build Multi-Arch') {
 			steps {
 				container('docker') {
