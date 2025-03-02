@@ -53,6 +53,12 @@ pipeline {
         }
 
         stage('SonarQube Analysis') {
+			agent {
+				docker {
+					image 'sonarsource/sonar-scanner-cli:latest'
+					args '-u root'
+				}
+			}
 			steps {
                 withSonarQubeEnv('sonarqube-server') {
                     sh 'sonar-scanner -Dsonar.projectKey=sboot-order-processor -Dsonar.sources=.'
