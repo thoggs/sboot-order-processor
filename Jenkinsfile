@@ -144,7 +144,7 @@ pipeline {
 
         stage('SonarQube Analysis') {
 			steps {
-				container('docker') {
+				container('sonar-scanner') {
 					withSonarQubeEnv('sonarqube-server') {
 						sh 'sonar-scanner -Dsonar.projectKey=sboot-order-processor -Dsonar.sources=.'
                     }
