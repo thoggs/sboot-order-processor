@@ -52,17 +52,6 @@ pipeline {
             }
         }
 
-        stage('Install Sonar Scanner') {
-			steps {
-				sh '''
-					wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-7.0.2.4839-linux-x64.zip
-					unzip sonar-scanner-cli-7.0.2.4839-linux-x64.zip
-					export PATH=$PATH:$(pwd)/sonar-scanner-cli-7.0.2.4839-linux-x64/bin
-					sonar-scanner --version
-        		'''
-    		}
-		}
-
         stage('SonarQube Analysis') {
 			steps {
 				withSonarQubeEnv('sonarqube-server') {
