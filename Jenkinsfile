@@ -159,7 +159,7 @@ pipeline {
 								sonar-scanner \
 								-Dsonar.projectKey=sboot-order-processor \
 								-Dsonar.sources=. \
-								-Dsonar.login=$SONAR_TOKEN
+								-Dsonar.java.binaries=build/classes/java/main
                     		'''
 						}
 					}
