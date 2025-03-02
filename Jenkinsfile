@@ -52,6 +52,14 @@ pipeline {
             }
         }
 
+        stage('SonarQube Analysis') {
+			steps {
+                withSonarQubeEnv('sonarqube-server') {
+                    sh 'sonar-scanner -Dsonar.projectKey=sboot-order-processor -Dsonar.sources=.'
+                }
+            }
+        }
+
         stage('Build Multi-Arch') {
 			steps {
 				sh '''
