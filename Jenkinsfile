@@ -118,20 +118,29 @@ pipeline {
 			steps {
 				container('aws-cli') {
 					withCredentials([
-                        usernamePassword(
-                            credentialsId: 'aws-username-password',
-                            usernameVariable: 'AWS_ACCESS_KEY_ID',
-                            passwordVariable: 'AWS_SECRET_ACCESS_KEY'
-                        )
-                    ]) {
+						usernamePassword(
+							credentialsId: 'aws-username-password',
+							usernameVariable: 'AWS_ACCESS_KEY_ID',
+							passwordVariable: 'AWS_SECRET_ACCESS_KEY'
+						)
+						]) {
 						sh '''
-                            aws ecr-public get-login-password --region $AWS_REGION \
-                            | docker login --username AWS --password-stdin public.ecr.aws
-                        '''
-                    }
-                }
-            }
-        }
+							aws ecr-public get-login-password --region $AWS_REGION > ecr-login.txt
+						'''
+						}
+				}
+			}
+		}
+
+		stage('Login to Docker') {
+			steps {
+				container('docker') {
+					sh '''
+						cat ecr-login.txt | docker login --username AWS --password-stdin public.ecr.aws
+					'''
+				}
+			}
+		}
 
         stage('SonarQube Analysis') {
 			steps {
