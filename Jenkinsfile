@@ -142,6 +142,14 @@ pipeline {
 			}
 		}
 
+		stage('Build with Gradle') {
+			steps {
+				container('gradle') {
+					sh 'gradle clean build'
+                }
+            }
+        }
+
        stage('SonarQube Analysis') {
 			steps {
 				container('sonar-scanner') {
