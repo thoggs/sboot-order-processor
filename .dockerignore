@@ -5,7 +5,8 @@ test/
 *.iml
 .idea/
 *.log
-**/build/
+**/build
+!build/libs/app.jar
 **/dist/
 **/out/
 target/*
