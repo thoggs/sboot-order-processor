@@ -1,0 +1,15 @@
+src/
+test/
+.git/
+.gitignore
+*.iml
+.idea/
+*.log
+**/build/
+**/dist/
+**/out/
+target/*
+!target/app.jar
+**/*.env
+**/secrets*.yaml
+README.md
