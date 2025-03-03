@@ -22,7 +22,7 @@ RUN set -eux; \
 
 ENV PATH=$JAVA_HOME/bin:$PATH
 
-RUN wget --no-check-certificate -P https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip -P /tmp && \
+RUN wget --no-check-certificate -P /tmp https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip -P /tmp && \
     unzip -d /opt/gradle /tmp/gradle-${GRADLE_VERSION}-bin.zip && \
     ln -s /opt/gradle/gradle-${GRADLE_VERSION}/bin/gradle /usr/bin/gradle
 
