@@ -82,6 +82,7 @@ pipeline {
     options {
 		buildDiscarder(logRotator(numToKeepStr: '5'))
         skipDefaultCheckout(true)
+        disableConcurrentBuilds()
     }
 
     environment {
