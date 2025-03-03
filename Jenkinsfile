@@ -92,24 +92,6 @@ pipeline {
 
     stages {
 
-		stage('Block Previous Builds') {
-			steps {
-				blockBuild(
-                    useBuildStep: false,
-                    blockingJobs: '',
-                    blockingBuilds: 'sboot-order-processor',
-                    blockingBuildsRegex: '',
-                    parameterFilters: '',
-                    abortBuild: true,
-                    unstableBuild: false,
-                    failedBuild: false,
-                    abortedBuild: false,
-                    notBuiltBuild: false,
-                    alwaysBlock: true
-                )
-            }
-        }
-
 		stage('Checkout') {
 			steps {
 				git branch: 'main', url: 'https://github.com/thoggs/sboot-order-processor.git'
