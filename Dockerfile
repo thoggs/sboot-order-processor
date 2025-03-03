@@ -1,15 +1,12 @@
-FROM oraclelinux:9 AS builder
+FROM oraclelinux:9 AS base
 
 RUN set -eux; \
     dnf install -y tar git wget unzip
 
 ARG JAVA_VERSION=21
-ARG GRADLE_VERSION=8.11
+ENV JAVA_HOME=/usr/java/jdk-$JAVA_VERSION
+ENV PATH=$JAVA_HOME/bin:$PATH
 
-ENV JAVA_URL=https://download.oracle.com/java/$JAVA_VERSION/latest \
-    JAVA_HOME=/usr/java/jdk-$JAVA_VERSION
-
-SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN set -eux; \
     ARCH="$(uname -m)" && \
     if [ "$ARCH" = "x86_64" ]; then ARCH="x64"; fi && \
@@ -20,40 +17,11 @@ RUN set -eux; \
     mkdir -p "$JAVA_HOME" && \
     tar --extract --file /tmp/jdk.tgz --directory "$JAVA_HOME" --strip-components 1
 
-ENV PATH=$JAVA_HOME/bin:$PATH
-
-RUN wget --no-check-certificate -P /tmp https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip -P /tmp && \
-    unzip -d /opt/gradle /tmp/gradle-${GRADLE_VERSION}-bin.zip && \
-    ln -s /opt/gradle/gradle-${GRADLE_VERSION}/bin/gradle /usr/bin/gradle
-
-WORKDIR /app
-
-COPY . .
-
-RUN gradle clean build -x test
-
-FROM oraclelinux:9
-
 ENV LANG=en_US.UTF-8
-ARG JAVA_VERSION=21
-ENV JAVA_HOME=/usr/java/jdk-$JAVA_VERSION
-ENV PATH=$JAVA_HOME/bin:$PATH
 
-COPY --from=builder $JAVA_HOME $JAVA_HOME
-COPY --from=builder /app/build/libs/*.jar /app/app.jar
-
-RUN set -eux; \
-    dnf -y update; \
-    dnf install -y \
-        freetype fontconfig; \
-    rm -rf /var/cache/dnf; \
-    ln -sfT "$JAVA_HOME" /usr/java/default; \
-    ln -sfT "$JAVA_HOME" /usr/java/latest; \
-    for bin in "$JAVA_HOME/bin/"*; do \
-        base="$(basename "$bin")"; \
-        [ ! -e "/usr/bin/$base" ]; \
-        alternatives --install "/usr/bin/$base" "$base" "$bin" 20000; \
-    done
+FROM base
+ARG JAR_FILE=build/libs/app.jar
+COPY ${JAR_FILE} /app/app.jar
 
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]

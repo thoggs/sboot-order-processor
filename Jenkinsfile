@@ -173,6 +173,7 @@ pipeline {
 					sh '''
                         docker buildx build \
                             --platform linux/amd64,linux/arm64 \
+                            --build-arg JAR_FILE=app.jar \
                             -t $DOCKER_IMAGE:latest \
                             --push .
                     '''
