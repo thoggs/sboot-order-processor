@@ -76,12 +76,11 @@
 
 pipeline {
 	agent {
-		label 'kub-suse-rancher-agent'
+		label 'kub-gradle-agent'
     }
 
     options {
 		buildDiscarder(logRotator(numToKeepStr: '5'))
-        skipDefaultCheckout(true)
         disableConcurrentBuilds()
     }
 
@@ -92,9 +91,12 @@ pipeline {
 
     stages {
 
-		stage('Checkout') {
+        stage('Build with Gradle') {
 			steps {
-				git branch: 'main', url: 'https://github.com/thoggs/sboot-order-processor.git'
+				container('gradle') {
+					sh 'gradle clean build -x test'
+					sh 'cp build/libs/app.jar ./app.jar'
+                }
             }
         }
 
@@ -142,15 +144,6 @@ pipeline {
 				}
 			}
 		}
-
-		stage('Build with Gradle') {
-			steps {
-				container('gradle') {
-					sh 'gradle clean build -x test'
-					sh 'cp build/libs/app.jar ./app.jar'
-                }
-            }
-        }
 
        stage('SonarQube Analysis') {
 			steps {
