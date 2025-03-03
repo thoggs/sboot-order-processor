@@ -76,7 +76,7 @@
 
 pipeline {
 	agent {
-		label 'docker-builder'
+		label 'kub-suse-rancher-agent'
     }
 
     options {
