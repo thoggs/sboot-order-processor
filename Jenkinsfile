@@ -146,6 +146,7 @@ pipeline {
 			steps {
 				container('gradle') {
 					sh 'gradle clean build -x test'
+					sh 'cp build/libs/app.jar ./app.jar'
                 }
             }
         }
