@@ -114,7 +114,7 @@ pipeline {
             }
         }
 
-        stage('Login to AWS ECR Public') {
+        stage('Login to AWS ECR') {
 			steps {
 				container('aws-cli') {
 					withCredentials([
