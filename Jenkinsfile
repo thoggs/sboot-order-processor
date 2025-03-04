@@ -123,16 +123,12 @@ pipeline {
 
 					cache(caches: [
 						arbitraryFileCache(
-							path: "/cache/docker",
+							path: "/var/lib/docker/buildkit",
 							includes: "**/*",
 							cacheValidityDecidingFile: "docker-cache.key"
-						)
+                		)
 					]) {
 								sh '''
-
-								echo "Criando diretório de cache se não existir..."
-								mkdir -p /cache/docker
-								ls -lah /cache/docker || echo "Nenhum cache encontrado antes do build"
 
 								docker buildx build \
 									--platform linux/amd64,linux/arm64 \
