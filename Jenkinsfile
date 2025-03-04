@@ -120,24 +120,17 @@ pipeline {
 			steps {
 				container('docker') {
 					sh '''
-                echo "=== LISTANDO CACHE ANTES DO BUILD ==="
-                ls -lahR /var/lib/docker/buildkit || echo "Cache não encontrado"
-
-                echo "=== EXECUTANDO BUILD ==="
-                docker buildx build \
-                    --platform linux/amd64,linux/arm64 \
-                    --build-arg JAR_FILE=app.jar \
-                    --cache-from=type=local,src=/var/lib/docker/buildkit \
-                    --cache-to=type=local,dest=/var/lib/docker/buildkit,mode=max \
-                    -t $DOCKER_IMAGE:latest \
-                    --push .
-
-                echo "=== LISTANDO CACHE APÓS O BUILD ==="
-                ls -lahR /var/lib/docker/buildkit || echo "Cache não encontrado"
-            '''
-					}
+					docker buildx build \
+						--platform linux/amd64,linux/arm64 \
+						--build-arg JAR_FILE=app.jar \
+						--cache-from=type=local,src=/var/lib/docker/buildkit \
+						--cache-to=type=local,dest=/var/lib/docker/buildkit,mode=max \
+						-t $DOCKER_IMAGE:latest \
+						--push .
+            		'''
 				}
 			}
+		}
 
     	//stage('Build Multi-Arch') {
 		//	steps {
