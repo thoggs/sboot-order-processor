@@ -16,14 +16,40 @@ pipeline {
 
     stages {
 
-        stage('Build with Gradle') {
+		stage('Restore & Install Deps') {
 			steps {
 				container('gradle') {
-					sh 'gradle clean build -x test'
-					sh 'cp build/libs/app.jar ./app.jar'
+					writeFile file: "gradle-cache.key", text: "$GIT_COMMIT"
+
+                    cache(caches: [
+                        arbitraryFileCache(
+                            path: ".gradle",
+                            includes: "**/*",
+                            cacheValidityDecidingFile: "gradle-cache.key"
+                        ),
+                        arbitraryFileCache(
+                            path: "build",
+                            includes: "**/*",
+                            cacheValidityDecidingFile: "gradle-cache.key"
+                        )
+                    ]) {
+						sh '''
+                            gradle --build-cache clean build -x test
+                            cp build/libs/app.jar ./app.jar
+                        '''
+                    }
                 }
             }
         }
+
+        //stage('Build with Gradle') {
+		//	steps {
+		//		container('gradle') {
+		//			sh 'gradle clean build -x test'
+		//			sh 'cp build/libs/app.jar ./app.jar'
+        //        }
+        //    }
+        //}
 
         stage('Set up QEMU') {
 			steps {
