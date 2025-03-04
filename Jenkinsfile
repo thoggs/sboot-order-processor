@@ -130,7 +130,7 @@ pipeline {
 					]) {
 								sh '''
 
-								docker buildx build --debug \
+								docker buildx build --verbose \
 									--platform linux/amd64,linux/arm64 \
 									--build-arg JAR_FILE=app.jar \
 									--cache-from=type=local,src=/cache/docker \
