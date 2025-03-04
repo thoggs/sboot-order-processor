@@ -133,10 +133,10 @@ pipeline {
 								docker buildx build \
 									--platform linux/amd64,linux/arm64 \
 									--build-arg JAR_FILE=app.jar \
-									--cache-from=type=local,src=/cache/docker \
-									--cache-to=type=local,dest=/cache/docker,mode=max \
+									--cache-from=type=local,src=/var/lib/docker/buildkit \
+									--cache-to=type=local,dest=/var/lib/docker/buildkit,mode=max \
 									-t $DOCKER_IMAGE:latest \
-									--push --progress=plain .
+									--push .
 								'''
 					}
 				}
