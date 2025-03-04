@@ -87,7 +87,7 @@ pipeline {
 			}
 		}
 
-       stage('SonarQube Analysis') {
+    	stage('SonarQube Analysis') {
 			steps {
 				container('sonar-scanner') {
 					withSonarQubeEnv('sonarqube-server') {
@@ -102,9 +102,9 @@ pipeline {
 					}
 				}
 			}
-       }
+    	}
 
-       stage('Trivy Security Scan') {
+    	stage('Trivy Security Scan') {
 			steps {
 				container('trivy') {
 					dir('conecta') {
@@ -114,14 +114,14 @@ pipeline {
 					}
 				}
 			}
-	  }
+		}
 
-	  stage('Build Multi-Arch') {
+		stage('Build Multi-Arch') {
 			steps {
 				container('docker') {
 					writeFile file: "docker-cache.key", text: "$GIT_COMMIT"
 
-            cache(caches: [
+			cache(caches: [
                 arbitraryFileCache(
                     path: "/cache/docker",
                     includes: "**/*",
@@ -129,18 +129,19 @@ pipeline {
                 )
             ]) {
 						sh '''
-							docker buildx build \
-								--platform linux/amd64,linux/arm64 \
-								--build-arg JAR_FILE=app.jar \
-								--cache-from=type=local,src=/cache/docker \
-								--cache-to=type=local,dest=/cache/docker \
-								-t $DOCKER_IMAGE:latest \
-								--push .
+						docker buildx build \
+							--platform linux/amd64,linux/arm64 \
+							--build-arg JAR_FILE=app.jar \
+							--cache-from=type=local,src=/cache/docker \
+							--cache-to=type=local,dest=/cache/docker,mode=max \
+							-t $DOCKER_IMAGE:latest \
+							--push .
                 		'''
 					}
 				}
 			}
-	  }
+		}
+
 
 
     	//stage('Build Multi-Arch') {
