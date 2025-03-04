@@ -134,6 +134,13 @@ pipeline {
                 )
             ]) {
 						sh '''
+
+							echo "=== LISTANDO DIRETÓRIOS ANTES DO BUILD ==="
+							ls -lahR /var/lib/docker/buildkit || echo "Não encontrado"
+							ls -lahR /var/lib/docker || echo "Não encontrado"
+							ls -lahR /cache/docker || echo "Não encontrado"
+							ls -lahR /tmp/ || echo "Não encontrado"
+
 							# Build para amd64
 							docker buildx build \
 								--platform linux/amd64 \
@@ -151,6 +158,13 @@ pipeline {
 								--cache-to=type=local,dest=/var/lib/docker/buildkit/arm64,mode=max \
 								-t $DOCKER_IMAGE:arm64 \
 								--push .
+
+							echo "=== LISTANDO DIRETÓRIOS APÓS O BUILD ==="
+							ls -lahR /var/lib/docker/buildkit || echo "Não encontrado"
+							ls -lahR /var/lib/docker || echo "Não encontrado"
+							ls -lahR /cache/docker || echo "Não encontrado"
+							ls -lahR /tmp/ || echo "Não encontrado"
+
 
 							# Criar manifest para consolidar as arquiteturas
 							docker buildx imagetools create \
