@@ -119,65 +119,25 @@ pipeline {
 		stage('Build Multi-Arch') {
 			steps {
 				container('docker') {
-					writeFile file: "docker-cache.key", text: "$GIT_COMMIT"
-
-            cache(caches: [
-                arbitraryFileCache(
-                    path: "/var/lib/docker",  // <-- Caminho atualizado para o PVC
-                    includes: "**/*",
-                    cacheValidityDecidingFile: "docker-cache.key"
-                )
-            ]) {
-						sh '''
-                echo "=== LISTANDO DIRETÓRIOS ANTES DO BUILD ==="
-                ls -lahR /var/lib/docker || echo "Não encontrado"
+					sh '''
+                echo "=== LISTANDO CACHE ANTES DO BUILD ==="
+                ls -lahR /var/lib/docker/buildkit || echo "Cache não encontrado"
 
                 echo "=== EXECUTANDO BUILD ==="
                 docker buildx build \
                     --platform linux/amd64,linux/arm64 \
                     --build-arg JAR_FILE=app.jar \
-                    --cache-from=type=local,src=/var/lib/docker/buildx-cache \
-                    --cache-to=type=local,dest=/var/lib/docker/buildx-cache,mode=max \
+                    --cache-from=type=local,src=/var/lib/docker/buildkit \
+                    --cache-to=type=local,dest=/var/lib/docker/buildkit,mode=max \
                     -t $DOCKER_IMAGE:latest \
                     --push .
 
-                echo "=== LISTANDO DIRETÓRIOS APÓS O BUILD ==="
-                ls -lahR /var/lib/docker || echo "Não encontrado"
-                '''
-            }
-        }
-    }
-}
-
-
-
-		//stage('Build Multi-Arch') {
-		//	steps {
-		//		container('docker') {
-		//			writeFile file: "docker-cache.key", text: "$GIT_COMMIT"
-		//
-		//			cache(caches: [
-		//				arbitraryFileCache(
-		//					path: "/var/lib/docker/buildkit",
-		//					includes: "**/*",
-		//					cacheValidityDecidingFile: "docker-cache.key"
-        //        		)
-		//			]) {
-		//						sh '''
-		//						docker buildx build \
-		//							--platform linux/amd64,linux/arm64 \
-		//							--build-arg JAR_FILE=app.jar \
-		//							--cache-from=type=local,src=/var/lib/docker/buildkit \
-		//							--cache-to=type=local,dest=/var/lib/docker/buildkit,mode=max \
-		//							-t $DOCKER_IMAGE:latest \
-		//							--push .
-		//						'''
-		//			}
-		//		}
-		//	}
-		//}
-
-
+                echo "=== LISTANDO CACHE APÓS O BUILD ==="
+                ls -lahR /var/lib/docker/buildkit || echo "Cache não encontrado"
+            '''
+					}
+				}
+			}
 
     	//stage('Build Multi-Arch') {
 		//	steps {
