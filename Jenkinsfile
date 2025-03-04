@@ -87,6 +87,18 @@ pipeline {
 			}
        }
 
+       stage('Trivy Security Scan') {
+			steps {
+				container('trivy') {
+					dir('conecta') {
+						sh '''
+							trivy fs --skip-dirs build/static/js .
+						'''
+					}
+				}
+			}
+		}
+
     	stage('Build Multi-Arch') {
 			steps {
 				container('docker') {
