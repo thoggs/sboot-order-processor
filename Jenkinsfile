@@ -9,7 +9,7 @@ pipeline {
     }
 
     environment {
-		PROJECT_KEY='sboot-order-processor'
+		PROJECT_KEY = 'sboot-order-processor'
 		DOCKER_IMAGE = 'public.ecr.aws/n1a9j0r1/sboot-order-processor'
         AWS_REGION = 'us-east-1'
     }
@@ -114,20 +114,47 @@ pipeline {
 					}
 				}
 			}
-		}
+	  }
 
-    	stage('Build Multi-Arch') {
+	  stage('Build Multi-Arch') {
 			steps {
 				container('docker') {
-					sh '''
-                        docker buildx build \
-                            --platform linux/amd64,linux/arm64 \
-                            --build-arg JAR_FILE=app.jar \
-                            -t $DOCKER_IMAGE:latest \
-                            --push .
-                    '''
-                }
-            }
-    	}
+					writeFile file: "docker-cache.key", text: "$GIT_COMMIT"
+
+            cache(caches: [
+                arbitraryFileCache(
+                    path: "/cache/docker",
+                    includes: "**/*",
+                    cacheValidityDecidingFile: "docker-cache.key"
+                )
+            ]) {
+						sh '''
+							docker buildx build \
+								--platform linux/amd64,linux/arm64 \
+								--build-arg JAR_FILE=app.jar \
+								--cache-from=type=local,src=/cache/docker \
+								--cache-to=type=local,dest=/cache/docker \
+								-t $DOCKER_IMAGE:latest \
+								--push .
+                		'''
+					}
+				}
+			}
+	  }
+
+
+    	//stage('Build Multi-Arch') {
+		//	steps {
+		//		container('docker') {
+		//			sh '''
+        //                docker buildx build \
+        //                    --platform linux/amd64,linux/arm64 \
+        //                    --build-arg JAR_FILE=app.jar \
+        //                    -t $DOCKER_IMAGE:latest \
+        //                    --push .
+        //            '''
+        //        }
+        //    }
+    	//}
 	}
 }
