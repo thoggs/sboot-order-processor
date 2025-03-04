@@ -123,26 +123,26 @@ pipeline {
 
             cache(caches: [
                 arbitraryFileCache(
-                    path: "/var/lib/docker/volumes/buildx_buildkit_mybuilder0_state/_data",
+                    path: "/var/lib/docker",  // <-- Caminho atualizado para o PVC
                     includes: "**/*",
                     cacheValidityDecidingFile: "docker-cache.key"
                 )
             ]) {
 						sh '''
                 echo "=== LISTANDO DIRETÓRIOS ANTES DO BUILD ==="
-                ls -lahR /var/lib/docker/volumes/buildx_buildkit_mybuilder0_state/_data || echo "Não encontrado"
+                ls -lahR /var/lib/docker || echo "Não encontrado"
 
                 echo "=== EXECUTANDO BUILD ==="
                 docker buildx build \
                     --platform linux/amd64,linux/arm64 \
                     --build-arg JAR_FILE=app.jar \
-                    --cache-from=type=local,src=/var/lib/docker/volumes/buildx_buildkit_mybuilder0_state/_data \
-                    --cache-to=type=local,dest=/var/lib/docker/volumes/buildx_buildkit_mybuilder0_state/_data,mode=max \
+                    --cache-from=type=local,src=/var/lib/docker/buildx-cache \
+                    --cache-to=type=local,dest=/var/lib/docker/buildx-cache,mode=max \
                     -t $DOCKER_IMAGE:latest \
                     --push .
 
                 echo "=== LISTANDO DIRETÓRIOS APÓS O BUILD ==="
-                ls -lahR /var/lib/docker/volumes/buildx_buildkit_mybuilder0_state/_data || echo "Não encontrado"
+                ls -lahR /var/lib/docker || echo "Não encontrado"
                 '''
             }
         }
