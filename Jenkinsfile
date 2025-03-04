@@ -123,59 +123,32 @@ pipeline {
 
             cache(caches: [
                 arbitraryFileCache(
-                    path: "/var/lib/docker/buildkit/amd64",
-                    includes: "**/*",
-                    cacheValidityDecidingFile: "docker-cache.key"
-                ),
-                arbitraryFileCache(
-                    path: "/var/lib/docker/buildkit/arm64",
+                    path: "/var/lib/docker/volumes/buildx_buildkit_mybuilder0_state/_data",
                     includes: "**/*",
                     cacheValidityDecidingFile: "docker-cache.key"
                 )
             ]) {
 						sh '''
+                echo "=== LISTANDO DIRETÓRIOS ANTES DO BUILD ==="
+                ls -lahR /var/lib/docker/volumes/buildx_buildkit_mybuilder0_state/_data || echo "Não encontrado"
 
-							echo "=== LISTANDO DIRETÓRIOS ANTES DO BUILD ==="
-							ls -lahR /var/lib/docker/buildkit || echo "Não encontrado"
-							ls -lahR /var/lib/docker || echo "Não encontrado"
-							ls -lahR /cache/docker || echo "Não encontrado"
-							ls -lahR /tmp/ || echo "Não encontrado"
+                echo "=== EXECUTANDO BUILD ==="
+                docker buildx build \
+                    --platform linux/amd64,linux/arm64 \
+                    --build-arg JAR_FILE=app.jar \
+                    --cache-from=type=local,src=/var/lib/docker/volumes/buildx_buildkit_mybuilder0_state/_data \
+                    --cache-to=type=local,dest=/var/lib/docker/volumes/buildx_buildkit_mybuilder0_state/_data,mode=max \
+                    -t $DOCKER_IMAGE:latest \
+                    --push .
 
-							# Build para amd64
-							docker buildx build \
-								--platform linux/amd64 \
-								--build-arg JAR_FILE=app.jar \
-								--cache-from=type=local,src=/var/lib/docker/buildkit/amd64 \
-								--cache-to=type=local,dest=/var/lib/docker/buildkit/amd64,mode=max \
-								-t $DOCKER_IMAGE:amd64 \
-								--push .
+                echo "=== LISTANDO DIRETÓRIOS APÓS O BUILD ==="
+                ls -lahR /var/lib/docker/volumes/buildx_buildkit_mybuilder0_state/_data || echo "Não encontrado"
+                '''
+            }
+        }
+    }
+}
 
-							# Build para arm64
-							docker buildx build \
-								--platform linux/arm64 \
-								--build-arg JAR_FILE=app.jar \
-								--cache-from=type=local,src=/var/lib/docker/buildkit/arm64 \
-								--cache-to=type=local,dest=/var/lib/docker/buildkit/arm64,mode=max \
-								-t $DOCKER_IMAGE:arm64 \
-								--push .
-
-							echo "=== LISTANDO DIRETÓRIOS APÓS O BUILD ==="
-							ls -lahR /var/lib/docker/buildkit || echo "Não encontrado"
-							ls -lahR /var/lib/docker || echo "Não encontrado"
-							ls -lahR /cache/docker || echo "Não encontrado"
-							ls -lahR /tmp/ || echo "Não encontrado"
-
-
-							# Criar manifest para consolidar as arquiteturas
-							docker buildx imagetools create \
-								--tag $DOCKER_IMAGE:latest \
-								$DOCKER_IMAGE:amd64 \
-								$DOCKER_IMAGE:arm64
-                		'''
-					}
-				}
-			}
-		}
 
 
 		//stage('Build Multi-Arch') {
