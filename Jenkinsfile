@@ -130,13 +130,13 @@ pipeline {
 					]) {
 								sh '''
 
-								docker buildx build --verbose \
+								docker buildx build \
 									--platform linux/amd64,linux/arm64 \
 									--build-arg JAR_FILE=app.jar \
 									--cache-from=type=local,src=/cache/docker \
 									--cache-to=type=local,dest=/cache/docker,mode=max \
 									-t $DOCKER_IMAGE:latest \
-									--push .
+									--push --progress=plain .
 								'''
 					}
 				}
