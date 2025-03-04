@@ -121,27 +121,74 @@ pipeline {
 				container('docker') {
 					writeFile file: "docker-cache.key", text: "$GIT_COMMIT"
 
-					cache(caches: [
-						arbitraryFileCache(
-							path: "/var/lib/docker/buildkit",
-							includes: "**/*",
-							cacheValidityDecidingFile: "docker-cache.key"
-                		)
-					]) {
-								sh '''
+            cache(caches: [
+                arbitraryFileCache(
+                    path: "/var/lib/docker/buildkit/amd64",
+                    includes: "**/*",
+                    cacheValidityDecidingFile: "docker-cache.key"
+                ),
+                arbitraryFileCache(
+                    path: "/var/lib/docker/buildkit/arm64",
+                    includes: "**/*",
+                    cacheValidityDecidingFile: "docker-cache.key"
+                )
+            ]) {
+						sh '''
+							# Build para amd64
+							docker buildx build \
+								--platform linux/amd64 \
+								--build-arg JAR_FILE=app.jar \
+								--cache-from=type=local,src=/var/lib/docker/buildkit/amd64 \
+								--cache-to=type=local,dest=/var/lib/docker/buildkit/amd64,mode=max \
+								-t $DOCKER_IMAGE:amd64 \
+								--push .
 
-								docker buildx build \
-									--platform linux/amd64,linux/arm64 \
-									--build-arg JAR_FILE=app.jar \
-									--cache-from=type=local,src=/var/lib/docker/buildkit \
-									--cache-to=type=local,dest=/var/lib/docker/buildkit,mode=max \
-									-t $DOCKER_IMAGE:latest \
-									--push .
-								'''
+							# Build para arm64
+							docker buildx build \
+								--platform linux/arm64 \
+								--build-arg JAR_FILE=app.jar \
+								--cache-from=type=local,src=/var/lib/docker/buildkit/arm64 \
+								--cache-to=type=local,dest=/var/lib/docker/buildkit/arm64,mode=max \
+								-t $DOCKER_IMAGE:arm64 \
+								--push .
+
+							# Criar manifest para consolidar as arquiteturas
+							docker buildx imagetools create \
+								--tag $DOCKER_IMAGE:latest \
+								$DOCKER_IMAGE:amd64 \
+								$DOCKER_IMAGE:arm64
+                		'''
 					}
 				}
 			}
 		}
+
+
+		//stage('Build Multi-Arch') {
+		//	steps {
+		//		container('docker') {
+		//			writeFile file: "docker-cache.key", text: "$GIT_COMMIT"
+		//
+		//			cache(caches: [
+		//				arbitraryFileCache(
+		//					path: "/var/lib/docker/buildkit",
+		//					includes: "**/*",
+		//					cacheValidityDecidingFile: "docker-cache.key"
+        //        		)
+		//			]) {
+		//						sh '''
+		//						docker buildx build \
+		//							--platform linux/amd64,linux/arm64 \
+		//							--build-arg JAR_FILE=app.jar \
+		//							--cache-from=type=local,src=/var/lib/docker/buildkit \
+		//							--cache-to=type=local,dest=/var/lib/docker/buildkit,mode=max \
+		//							-t $DOCKER_IMAGE:latest \
+		//							--push .
+		//						'''
+		//			}
+		//		}
+		//	}
+		//}
 
 
 
