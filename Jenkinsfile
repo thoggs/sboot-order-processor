@@ -121,22 +121,27 @@ pipeline {
 				container('docker') {
 					writeFile file: "docker-cache.key", text: "$GIT_COMMIT"
 
-			cache(caches: [
-                arbitraryFileCache(
-                    path: "/cache/docker",
-                    includes: "**/*",
-                    cacheValidityDecidingFile: "docker-cache.key"
-                )
-            ]) {
-						sh '''
-						docker buildx build \
-							--platform linux/amd64,linux/arm64 \
-							--build-arg JAR_FILE=app.jar \
-							--cache-from=type=local,src=/cache/docker \
-							--cache-to=type=local,dest=/cache/docker,mode=max \
-							-t $DOCKER_IMAGE:latest \
-							--push .
-                		'''
+					cache(caches: [
+						arbitraryFileCache(
+							path: "/cache/docker",
+							includes: "**/*",
+							cacheValidityDecidingFile: "docker-cache.key"
+						)
+					]) {
+								sh '''
+
+								echo "Criando diretório de cache se não existir..."
+								mkdir -p /cache/docker
+								ls -lah /cache/docker || echo "Nenhum cache encontrado antes do build"
+
+								docker buildx build \
+									--platform linux/amd64,linux/arm64 \
+									--build-arg JAR_FILE=app.jar \
+									--cache-from=type=local,src=/cache/docker \
+									--cache-to=type=local,dest=/cache/docker,mode=max \
+									-t $DOCKER_IMAGE:latest \
+									--push .
+								'''
 					}
 				}
 			}
