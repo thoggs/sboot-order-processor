@@ -128,6 +128,7 @@ pipeline {
                     )
                 ]) {
 					sh '''
+						buildah login -u AWS -p $(cat ecr-login.txt) public.ecr.aws
                         buildah bud --platform linux/amd64,linux/arm64 --build-arg JAR_FILE=app.jar -t $DOCKER_IMAGE:latest .
                         buildah push $DOCKER_IMAGE:latest docker://${DOCKER_IMAGE}:latest
                     '''
