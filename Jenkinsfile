@@ -77,15 +77,15 @@ pipeline {
 			}
 		}
 
-		//stage('Login to Docker') {
-		//	steps {
-		//		container('docker') {
-		//			sh '''
-		//				cat ecr-login.txt | docker login --username AWS --password-stdin public.ecr.aws
-		//			'''
-		//		}
-		//	}
-		//}
+		stage('Login Buildah to AWS ECR') {
+			steps {
+				container('buildah') {
+					sh '''
+						buildah login -u AWS -p $(cat ecr-login.txt) public.ecr.aws
+					'''
+				}
+			}
+		}
 
     	stage('SonarQube Analysis') {
 			steps {
@@ -128,7 +128,6 @@ pipeline {
                     )
                 ]) {
 					sh '''
-						buildah login -u AWS -p $(cat ecr-login.txt) public.ecr.aws
                         buildah bud --platform linux/amd64,linux/arm64 --build-arg JAR_FILE=app.jar -t $DOCKER_IMAGE:latest .
                         buildah push $DOCKER_IMAGE:latest docker://${DOCKER_IMAGE}:latest
                     '''
