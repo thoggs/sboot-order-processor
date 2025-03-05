@@ -51,11 +51,11 @@ pipeline {
 							usernameVariable: 'AWS_ACCESS_KEY_ID',
 							passwordVariable: 'AWS_SECRET_ACCESS_KEY'
 						)
-						]) {
+					]) {
 						sh '''
 							aws ecr-public get-login-password --region $AWS_REGION > ecr-login.txt
 						'''
-						}
+					}
 				}
 			}
 		}
