@@ -70,6 +70,16 @@ pipeline {
 			}
 		}
 
+		stage('Login Docker Hub') {
+			steps {
+				container('buildah') {
+					withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', usernameVariable: 'DOCKERHUB_USER', passwordVariable: 'DOCKERHUB_PASS')]) {
+						sh 'buildah login -u $DOCKERHUB_USER -p $DOCKERHUB_PASS docker.io'
+					}
+				}
+			}
+		}
+
     	stage('SonarQube Analysis') {
 			steps {
 				container('sonar-scanner') {
