@@ -10,7 +10,7 @@ pipeline {
 
     environment {
 		PROJECT_KEY = 'sboot-order-processor'
-		DOCKER_IMAGE = 'public.ecr.aws/n1a9j0r1/sboot-order-processor'
+		APP_IMAGE = 'public.ecr.aws/n1a9j0r1/sboot-order-processor'
         AWS_REGION = 'us-east-1'
     }
 
@@ -115,19 +115,19 @@ pipeline {
 			steps {
 				container('buildah') {
 					sh '''
-						buildah bud --layers --platform linux/amd64,linux/arm64 \
-							--build-arg JAR_FILE=app.jar \
-							-t $DOCKER_IMAGE:latest .
-					'''
+						buildah bud --layers --platform linux/amd64 --build-arg JAR_FILE=app.jar -t ${APP_IMAGE}-amd64:latest .
+						buildah bud --layers --platform linux/arm64 --build-arg JAR_FILE=app.jar -t ${APP_IMAGE}-arm64:latest .
+						buildah manifest create ${APP_IMAGE}:latest --amend ${APP_IMAGE}-amd64:latest --amend ${APP_IMAGE}-arm64:latest
+            		'''
             	}
         	}
-    	}
+		}
 
-    	stage('Push Image') {
+		stage('Push Image') {
 			steps {
 				container('buildah') {
 					sh '''
-                		buildah push $DOCKER_IMAGE:latest docker://${DOCKER_IMAGE}:latest
+                		buildah manifest push ${APP_IMAGE}:latest docker://${APP_IMAGE}:latest
             		'''
 				}
 			}
