@@ -70,7 +70,7 @@ pipeline {
 			}
 		}
 
-		stage('Login Docker Hub') {
+		stage('Login Buildah Docker Hub') {
 			steps {
 				container('buildah') {
 					withCredentials([usernamePassword(
