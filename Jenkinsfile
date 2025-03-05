@@ -42,7 +42,7 @@ pipeline {
             }
         }
 
-        stage('Login to AWS ECR') {
+        stage('Login AWS ECR') {
 			steps {
 				container('aws-cli') {
 					withCredentials([
@@ -60,7 +60,7 @@ pipeline {
 			}
 		}
 
-		stage('Login Buildah to AWS ECR') {
+		stage('Login Buildah AWS ECR') {
 			steps {
 				container('buildah') {
 					sh '''
@@ -73,7 +73,11 @@ pipeline {
 		stage('Login Docker Hub') {
 			steps {
 				container('buildah') {
-					withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKERHUB_USER', passwordVariable: 'DOCKERHUB_PASS')]) {
+					withCredentials([usernamePassword(
+						credentialsId: 'docker-hub-credentials',
+						usernameVariable: 'DOCKERHUB_USER',
+						passwordVariable: 'DOCKERHUB_PASS'
+					)]) {
 						sh 'buildah login -u $DOCKERHUB_USER -p $DOCKERHUB_PASS docker.io'
 					}
 				}
