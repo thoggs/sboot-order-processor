@@ -42,7 +42,7 @@ pipeline {
             }
         }
 
-        stage('Login AWS ECR') {
+        stage('Login AWS CLI ECR') {
 			steps {
 				container('aws-cli') {
 					withCredentials([
