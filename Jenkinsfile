@@ -118,24 +118,24 @@ pipeline {
 
 		stage('Build Multi-Arch') {
 			steps {
-				container('buildah') { // Assumindo que o container 'buildah' tenha o buildah instalado.
-                writeFile file: "buildah-cache.key", text: "$GIT_COMMIT"
-                cache(caches: [
-                    arbitraryFileCache(
-                        path: '/var/cache/buildah', // Diretório de cache padrão do Buildah
-                        includes: '**/*',
-                        cacheValidityDecidingFile: 'buildah-cache.key'
-                    )
-                ]) {
+				container('podman') { // Assumindo que o container 'podman' tenha o Podman instalado.
+            writeFile file: "podman-cache.key", text: "$GIT_COMMIT"
+            cache(caches: [
+                arbitraryFileCache(
+                    path: '/var/lib/containers/storage', // Diretório de cache padrão do Podman
+                    includes: '**/*',
+                    cacheValidityDecidingFile: 'podman-cache.key'
+                )
+            ]) {
 					sh '''
-						buildah login -u AWS -p $(cat ecr-login.txt) public.ecr.aws
-                        buildah bud --platform linux/amd64,linux/arm64 --build-arg JAR_FILE=app.jar -t $DOCKER_IMAGE:latest .
-                        buildah push $DOCKER_IMAGE:latest docker://${DOCKER_IMAGE}:latest
-                    '''
-                }
-             }
-          }
-       }
+                    podman login -u AWS -p $(cat ecr-login.txt) public.ecr.aws
+                    podman build --platform linux/amd64,linux/arm64 --build-arg JAR_FILE=app.jar -t $DOCKER_IMAGE:latest .
+                    podman push $DOCKER_IMAGE:latest docker://${DOCKER_IMAGE}:latest
+                '''
+            }
+        }
+    }
+}
 
 		//stage('Build Multi-Arch') {
 		//	steps {
