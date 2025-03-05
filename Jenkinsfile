@@ -119,47 +119,31 @@ pipeline {
 		stage('Build Multi-Arch') {
 			steps {
 				container('docker') {
-					sh '''
-						docker buildx build \
-						   --platform linux/amd64,linux/arm64 \
-						   --build-arg JAR_FILE=app.jar \
-						   --cache-from=type=local,src=/var/lib/docker/buildkit \
-						   --cache-to=type=local,dest=/var/lib/docker/buildkit,mode=max \
-						   -t $DOCKER_IMAGE:latest \
-						   --push .
-                	'''
-
-                	writeFile file: "buildx-cache.key", text: "$GIT_COMMIT"
+					writeFile file: "buildx-cache.key", text: "$GIT_COMMIT"
 
 					cache(caches: [
-							arbitraryFileCache(
-								path: '/var/lib/docker/buildkit',
-								includes: '**/*',
-								cacheValidityDecidingFile: 'buildx-cache.key'
-							)
-						]) {
-						sh 'chmod -R 777 /var/lib/docker/buildkit'
+						arbitraryFileCache(
+							path: '/var/lib/docker/buildkit',
+							includes: '**/*',
+							cacheValidityDecidingFile: 'buildx-cache.key'
+						)
+					]) {
+						sh '''
+							docker buildx build \
+								--platform linux/amd64,linux/arm64 \
+								--build-arg JAR_FILE=app.jar \
+								--cache-from=type=local,src=/var/lib/docker/buildkit \
+								--cache-to=type=local,dest=/var/lib/docker/buildkit,mode=max \
+								-t $DOCKER_IMAGE:latest \
+								--push .
+
+							ls -lah
+						'''
 					}
 
-				}
+            	}
         	}
     	}
-
-		//stage('Build Multi-Arch') {
-		//	steps {
-		//		container('docker') {
-		//			sh '''
-		//			docker buildx build \
-		//				--platform linux/amd64,linux/arm64 \
-		//				--build-arg JAR_FILE=app.jar \
-		//				--cache-from=type=local,src=/var/lib/docker/buildkit \
-		//				--cache-to=type=local,dest=/var/lib/docker/buildkit,mode=max \
-		//				-t $DOCKER_IMAGE:latest \
-		//				--push .
-        //    		'''
-		//		}
-		//	}
-		//}
 
 	}
 }
