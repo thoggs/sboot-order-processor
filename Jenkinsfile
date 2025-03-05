@@ -100,21 +100,11 @@ pipeline {
 		stage('Build Multi-Arch') {
 			steps {
 				container('buildah') {
-					writeFile file: "buildah-cache.key", text: "$GIT_COMMIT"
-
-					cache(caches: [
-						arbitraryFileCache(
-							path: '/var/cache/buildah',
-							includes: '**/*',
-							cacheValidityDecidingFile: 'buildah-cache.key'
-						)
-					]) {
-						sh '''
-							buildah bud --layers --platform linux/amd64,linux/arm64 \
-								--build-arg JAR_FILE=app.jar \
-								-t $DOCKER_IMAGE:latest .
-						'''
-					}
+					sh '''
+						buildah bud --layers --platform linux/amd64,linux/arm64 \
+							--build-arg JAR_FILE=app.jar \
+							-t $DOCKER_IMAGE:latest .
+					'''
             	}
         	}
     	}
