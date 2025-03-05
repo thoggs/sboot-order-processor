@@ -100,14 +100,38 @@ pipeline {
 		stage('Build Multi-Arch') {
 			steps {
 				container('buildah') {
-					sh '''
-						buildah bud --layers --platform linux/amd64,linux/arm64 \
-							--build-arg JAR_FILE=app.jar \
-							-t $DOCKER_IMAGE:latest .
-					'''
-            	}
-        	}
-    	}
+					// Use uma chave de cache fixa, por exemplo "buildah-cache", para não invalidar o cache a cada build.
+					writeFile file: "buildah-cache.key", text: "buildah-cache"
+					cache(caches: [
+						arbitraryFileCache(
+							// Certifique-se de que o PVC está montado nesse diretório,
+							// que é onde o Buildah armazena suas camadas por padrão.
+							path: '/var/lib/containers/storage',
+							includes: '**/*',
+							cacheValidityDecidingFile: 'buildah-cache.key'
+						)
+					]) {
+								sh '''
+							buildah bud --layers --platform linux/amd64,linux/arm64 \
+								--build-arg JAR_FILE=app.jar \
+								-t $DOCKER_IMAGE:latest .
+						'''
+							}
+						}
+			}
+		}
+
+		//stage('Build Multi-Arch') {
+		//	steps {
+		//		container('buildah') {
+		//			sh '''
+		//				buildah bud --layers --platform linux/amd64,linux/arm64 \
+		//					--build-arg JAR_FILE=app.jar \
+		//					-t $DOCKER_IMAGE:latest .
+		//			'''
+        //    	}
+        //	}
+    	//}
 
     	stage('Push Image') {
 			steps {
