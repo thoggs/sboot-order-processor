@@ -97,14 +97,6 @@ pipeline {
 			}
 		}
 
-		stage('Cleanup Cache') {
-			steps {
-				container('buildah') {
-					sh 'buildah prune -a -f'
-				}
-			}
-		}
-
 		stage('Build Multi-Arch') {
 			steps {
 				container('buildah') {
@@ -123,6 +115,14 @@ pipeline {
 					sh '''
                 		buildah push $DOCKER_IMAGE:latest docker://${DOCKER_IMAGE}:latest
             		'''
+				}
+			}
+		}
+
+		stage('Cleanup Cache') {
+			steps {
+				container('buildah') {
+					sh 'buildah prune -a -f'
 				}
 			}
 		}
