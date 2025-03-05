@@ -90,11 +90,9 @@ pipeline {
     	stage('Trivy Security Scan') {
 			steps {
 				container('trivy') {
-					dir('conecta') {
-						sh '''
-							trivy fs --skip-dirs build/static/js .
-						'''
-					}
+					sh '''
+						trivy fs --skip-dirs build/static/js .
+					'''
 				}
 			}
 		}
@@ -112,10 +110,10 @@ pipeline {
 						)
 					]) {
 						sh '''
-								buildah bud --layers --platform linux/amd64,linux/arm64 \
-									--build-arg JAR_FILE=app.jar \
-									-t $DOCKER_IMAGE:latest .
-							'''
+							buildah bud --layers --platform linux/amd64,linux/arm64 \
+								--build-arg JAR_FILE=app.jar \
+								-t $DOCKER_IMAGE:latest .
+						'''
 					}
             	}
         	}
