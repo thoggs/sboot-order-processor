@@ -97,6 +97,14 @@ pipeline {
 			}
 		}
 
+		stage('Cleanup Cache') {
+			steps {
+				container('buildah') {
+					sh 'buildah prune -a -f'
+				}
+			}
+		}
+
 		stage('Build Multi-Arch') {
 			steps {
 				container('buildah') {
@@ -108,14 +116,6 @@ pipeline {
             	}
         	}
     	}
-
-    	stage('Cleanup Cache') {
-			steps {
-				container('buildah') {
-					sh 'buildah prune -a -f'
-				}
-			}
-		}
 
     	stage('Push Image') {
 			steps {
