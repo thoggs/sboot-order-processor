@@ -128,6 +128,7 @@ pipeline {
                 )
             ]) {
 					sh '''
+                    podman login -u AWS -p $(cat ecr-login.txt) public.ecr.aws
                     podman build --platform linux/amd64,linux/arm64 --build-arg JAR_FILE=app.jar -t $DOCKER_IMAGE:latest .
                     podman push $DOCKER_IMAGE:latest docker://${DOCKER_IMAGE}:latest
                 '''
