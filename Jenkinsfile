@@ -118,32 +118,52 @@ pipeline {
 
 		stage('Build Multi-Arch') {
 			steps {
-				container('docker') {
-					writeFile file: "buildx-cache.key", text: "$GIT_COMMIT"
+				container('buildah') { // Assumindo que o container 'buildah' tenha o buildah instalado.
+                writeFile file: "buildah-cache.key", text: "$GIT_COMMIT"
+                cache(caches: [
+                    arbitraryFileCache(
+                        path: '/var/cache/buildah', // Diretório de cache padrão do Buildah
+                        includes: '**/*',
+                        cacheValidityDecidingFile: 'buildah-cache.key'
+                    )
+                ]) {
+					sh '''
+                        buildah bud --platform linux/amd64,linux/arm64 --build-arg JAR_FILE=app.jar -t $DOCKER_IMAGE:latest .
+                        buildah push $DOCKER_IMAGE:latest docker://${DOCKER_IMAGE}:latest
+                    '''
+                }
+             }
+          }
+       }
 
-					cache(caches: [
-						arbitraryFileCache(
-							path: '/var/lib/docker/buildkit',
-							includes: '**/*',
-							cacheValidityDecidingFile: 'buildx-cache.key'
-						)
-					]) {
-						sh '''
-							docker buildx build \
-								--platform linux/amd64,linux/arm64 \
-								--build-arg JAR_FILE=app.jar \
-								--cache-from=type=local,src=/var/lib/docker/buildkit \
-								--cache-to=type=local,dest=/var/lib/docker/buildkit,mode=max \
-								-t $DOCKER_IMAGE:latest \
-								--push .
-
-							ls -lah
-						'''
-					}
-
-            	}
-        	}
-    	}
+		//stage('Build Multi-Arch') {
+		//	steps {
+		//		container('docker') {
+		//			writeFile file: "buildx-cache.key", text: "$GIT_COMMIT"
+		//
+		//			cache(caches: [
+		//				arbitraryFileCache(
+		//					path: '/var/lib/docker/buildkit',
+		//					includes: '**/*',
+		//					cacheValidityDecidingFile: 'buildx-cache.key'
+		//				)
+		//			]) {
+		//				sh '''
+		//					docker buildx build \
+		//						--platform linux/amd64,linux/arm64 \
+		//						--build-arg JAR_FILE=app.jar \
+		//						--cache-from=type=local,src=/var/lib/docker/buildkit \
+		//						--cache-to=type=local,dest=/var/lib/docker/buildkit,mode=max \
+		//						-t $DOCKER_IMAGE:latest \
+		//						--push .
+		//
+		//					ls -lah
+		//				'''
+		//			}
+		//
+        //    	}
+        //	}
+    	//}
 
 	}
 }
