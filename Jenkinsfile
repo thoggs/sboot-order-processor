@@ -42,22 +42,22 @@ pipeline {
             }
         }
 
-        stage('Set up QEMU') {
-			steps {
-				container('docker') {
-					sh 'docker run --rm --privileged multiarch/qemu-user-static --reset -p yes || true'
-                }
-            }
-        }
-
-        stage('Set up Docker Buildx') {
-			steps {
-				container('docker') {
-					sh 'docker buildx create --use --name mybuilder || true'
-                    sh 'docker buildx inspect --bootstrap'
-                }
-            }
-        }
+        //stage('Set up QEMU') {
+		//	steps {
+		//		container('docker') {
+		//			sh 'docker run --rm --privileged multiarch/qemu-user-static --reset -p yes || true'
+        //        }
+        //    }
+        //}
+		//
+        //stage('Set up Docker Buildx') {
+		//	steps {
+		//		container('docker') {
+		//			sh 'docker buildx create --use --name mybuilder || true'
+        //            sh 'docker buildx inspect --bootstrap'
+        //        }
+        //    }
+        //}
 
         stage('Login to AWS ECR') {
 			steps {
@@ -77,15 +77,15 @@ pipeline {
 			}
 		}
 
-		stage('Login to Docker') {
-			steps {
-				container('docker') {
-					sh '''
-						cat ecr-login.txt | docker login --username AWS --password-stdin public.ecr.aws
-					'''
-				}
-			}
-		}
+		//stage('Login to Docker') {
+		//	steps {
+		//		container('docker') {
+		//			sh '''
+		//				cat ecr-login.txt | docker login --username AWS --password-stdin public.ecr.aws
+		//			'''
+		//		}
+		//	}
+		//}
 
     	stage('SonarQube Analysis') {
 			steps {
