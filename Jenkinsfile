@@ -109,6 +109,14 @@ pipeline {
         	}
     	}
 
+    	stage('Cleanup Cache') {
+			steps {
+				container('buildah') {
+					sh 'buildah prune -a -f'
+				}
+			}
+		}
+
     	stage('Push Image') {
 			steps {
 				container('buildah') {
