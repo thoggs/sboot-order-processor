@@ -114,13 +114,32 @@ pipeline {
 		stage('Build Multi-Arch') {
 			steps {
 				container('buildah') {
-					sh '''
-						buildah bud --layers --platform linux/amd64 --build-arg JAR_FILE=app.jar -t ${APP_IMAGE}-amd64:latest .
-						buildah bud --layers --platform linux/arm64 --build-arg JAR_FILE=app.jar -t ${APP_IMAGE}-arm64:latest .
-						buildah manifest create ${APP_IMAGE}:latest --amend ${APP_IMAGE}-amd64:latest --amend ${APP_IMAGE}-arm64:latest
-            		'''
-            	}
-        	}
+					writeFile file: "buildah-cache.key", text: "$GIT_COMMIT"
+
+					sh'''
+						mkdir -p buildah_storage_cache
+						chmod -R 777 buildah_storage_cache
+					'''
+
+					cache(caches: [
+						arbitraryFileCache(
+							path: 'buildah_storage_cache',
+							includes: '**/*',
+							cacheValidityDecidingFile: 'buildah-cache.key'
+						)
+					]) {
+						sh '''
+							cp -r buildah_storage_cache /var/lib/containers/storage
+
+							buildah bud --layers --platform linux/amd64 -t ${APP_IMAGE}-amd64:latest .
+							buildah bud --layers --platform linux/arm64 -t ${APP_IMAGE}-arm64:latest .
+							buildah manifest create ${APP_IMAGE}:latest --amend ${APP_IMAGE}-amd64:latest --amend ${APP_IMAGE}-arm64:latest
+
+							cp -r /var/lib/containers/storage buildah_storage_cache
+						'''
+					}
+				}
+			}
 		}
 
 		stage('Push Image') {
