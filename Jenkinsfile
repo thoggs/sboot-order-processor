@@ -166,7 +166,7 @@ pipeline {
 								--build-arg JAR_FILE=app.jar \
 								--cache-from=type=local,src=docker_storage_cache \
 								--cache-to=type=local,dest=docker_storage_cache,mode=max \
-								-t ${DOCKER_IMAGE}:latest \
+								-t $APP_IMAGE:latest \
 								--push .
 						'''
 
