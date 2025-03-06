@@ -157,7 +157,7 @@ pipeline {
 					]) {
 
 						sh'''
-							cp -r docker_storage_cache /var/lib/containers/storage
+							cp -r docker_storage_cache /var/lib/docker/buildkit
 						'''
 
 						sh '''
@@ -171,7 +171,7 @@ pipeline {
 						'''
 
 						sh'''
-							cp -r /var/lib/containers/storage docker_storage_cache
+							cp -r /var/lib/docker/buildkit docker_storage_cache
 						'''
 
 					}
