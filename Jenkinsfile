@@ -1,6 +1,6 @@
 pipeline {
 	agent {
-		label 'kub-gradle-agent'
+		label 'kube-gradle-agent'
     }
 
     options {
