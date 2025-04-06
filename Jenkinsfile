@@ -10,7 +10,7 @@ pipeline {
 
     environment {
 		PROJECT_KEY = 'sboot-order-processor'
-		APP_IMAGE = 'public.ecr.aws/n1a9j0r1/sboot-order-processor'
+		APP_IMAGE = '361769563347.dkr.ecr.us-east-1.amazonaws.com/sboot-order-processor'
         RELEASE_BRANCH = 'main'
         AWS_REGION = 'us-east-1'
         AWS_REGISTRY = '361769563347.dkr.ecr.us-east-1.amazonaws.com'
@@ -159,7 +159,7 @@ pipeline {
 						)
 					]) {
 						sh '''
-							aws ecr-public get-login-password --region $AWS_REGION > ecr-login.txt
+							aws ecr get-login-password --region $AWS_REGION > ecr-login.txt
 						'''
 					}
 				}
