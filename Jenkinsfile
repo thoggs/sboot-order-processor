@@ -137,7 +137,6 @@ pipeline {
 
 							cp -r /var/lib/containers/storage buildah_storage_cache
 						'''
-
 					}
 				}
 			}

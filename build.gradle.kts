@@ -1,9 +1,9 @@
-extra["flywayCoreVersion"] = "11.3.3"
+extra["flywayCoreVersion"] = "11.4.1"
 extra["springdocVersion"] = "2.8.5"
 
 plugins {
     java
-    id("org.springframework.boot") version "3.4.3"
+    id("org.springframework.boot") version "3.4.4"
     id("io.spring.dependency-management") version "1.1.7"
 }
 
