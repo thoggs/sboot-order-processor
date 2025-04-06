@@ -11,8 +11,9 @@ pipeline {
     environment {
 		PROJECT_KEY = 'sboot-order-processor'
 		APP_IMAGE = 'public.ecr.aws/n1a9j0r1/sboot-order-processor'
-        AWS_REGION = 'us-east-1'
         RELEASE_BRANCH = 'main'
+        AWS_REGION = 'us-east-1'
+        AWS_REGISTRY = '361769563347.dkr.ecr.us-east-1.amazonaws.com'
         AWS_BUCKET = 'thoggs-sboot-order-processor'
         AWS_BUCKET_RELEASE_FILE_NAME = 'release_version.txt'
         AWS_BUCKET_SNAPSHOT_FILE_NAME = 'snapshot_version.txt'
@@ -169,7 +170,7 @@ pipeline {
 			steps {
 				container('buildah') {
 					sh '''
-						buildah login -u AWS -p $(cat ecr-login.txt) public.ecr.aws
+						buildah login -u AWS -p $(cat ecr-login.txt) $AWS_REGISTRY
 					'''
 				}
 			}
@@ -211,7 +212,10 @@ pipeline {
 
                             buildah bud --layers --platform linux/amd64 -t ${APP_IMAGE}-amd64:${VERSION} .
                             buildah bud --layers --platform linux/arm64 -t ${APP_IMAGE}-arm64:${VERSION} .
-                            buildah manifest create ${APP_IMAGE}:${VERSION} --amend ${APP_IMAGE}-amd64:${VERSION} --amend ${APP_IMAGE}-arm64:${VERSION}
+
+                            buildah manifest create ${APP_IMAGE}:${VERSION} \\
+                                --amend ${APP_IMAGE}-amd64:${VERSION} \\
+                                --amend ${APP_IMAGE}-arm64:${VERSION}
 
                             cp -r /var/lib/containers/storage buildah_storage_cache
                         """
